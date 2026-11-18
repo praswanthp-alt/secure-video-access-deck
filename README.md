@@ -4,7 +4,7 @@ Interactive, self-contained walkthrough deck for a HIPAA-aligned solution on Goo
 
 **View it:** https://praswanthp-alt.github.io/secure-video-access-deck/
 
-Tabs: The problem · Options we explored · Recommended solution · Next steps.
+Tabs: The challenge · Options we explored · Solution walkthrough · How it works.
 
 Keyboard: `1`–`4` switch tabs, `←` `→` step through the journey, `T` theme.
 

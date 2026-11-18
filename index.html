@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Secure Video Access for Hospitals — Options & Recommendation</title>
+<title>Secure Video Access for Hospitals — Google Cloud</title>
 <style>
   :root, [data-theme="dark"] {
     --bg:#070b14; --bg2:#0b1220; --card:#0f172a; --card2:#151f36; --border:#23314f;
@@ -23,12 +23,13 @@
     background:radial-gradient(900px 480px at 90% -10%, rgba(79,156,255,.13), transparent 60%), radial-gradient(700px 420px at -10% 40%, rgba(139,108,255,.07), transparent 60%); }
   h1,h2,h3,h4,p { margin:0; }
   button { font-family:inherit; cursor:pointer; }
-  code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12.5px; background:var(--card2); border:1px solid var(--border); border-radius:5px; padding:1px 6px; }
 
   header { position:sticky; top:0; z-index:40; background:color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); }
-  .hdr { max-width:1200px; margin:0 auto; display:flex; align-items:center; gap:16px; padding:10px 24px; }
-  .brand { display:flex; align-items:center; gap:10px; font-weight:800; font-size:14px; white-space:nowrap; }
-  .logo { width:30px; height:30px; border-radius:9px; display:grid; place-items:center; color:#fff; background:linear-gradient(135deg,var(--primary),var(--primary2)); }
+  .hdr { max-width:1240px; margin:0 auto; display:flex; align-items:center; gap:16px; padding:10px 24px; }
+  .brand { display:flex; align-items:center; gap:10px; white-space:nowrap; }
+  .brand .gc { font-weight:800; font-size:14px; }
+  .brand .gc span { color:var(--muted); font-weight:600; }
+  .dots { display:flex; gap:3px; } .dots i { width:7px; height:7px; border-radius:50%; display:block; }
   nav.tabs { display:flex; gap:4px; flex:1; justify-content:center; overflow-x:auto; scrollbar-width:none; }
   nav.tabs button { border:1px solid transparent; background:transparent; color:var(--muted); font-weight:650; font-size:13.5px; padding:8px 14px; border-radius:9px; white-space:nowrap; }
   nav.tabs button:hover { color:var(--text); background:var(--card2); }
@@ -37,18 +38,16 @@
   nav.tabs button.on .k { background:var(--primary); border-color:var(--primary); color:#fff; }
   .tool { border:1px solid var(--border); background:var(--card2); color:var(--text); font-size:13px; padding:7px 10px; border-radius:8px; }
 
-  main { max-width:1200px; margin:0 auto; padding:34px 24px 70px; }
+  main { max-width:1240px; margin:0 auto; padding:34px 24px 70px; }
   .tab { display:none; animation:fade .3s ease; }
   .tab.on { display:block; }
   @keyframes fade { from { opacity:0; transform:translateY(4px);} to { opacity:1; transform:none; } }
-
   .eyebrow { font-size:12px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:var(--primary); margin-bottom:10px; }
-  h1.big { font-size:40px; line-height:1.12; font-weight:860; letter-spacing:-.025em; max-width:960px; margin-bottom:14px; }
+  h1.big { font-size:42px; line-height:1.12; font-weight:860; letter-spacing:-.025em; max-width:980px; margin-bottom:14px; }
   h2.sec { font-size:28px; font-weight:820; letter-spacing:-.02em; margin-bottom:8px; }
-  .lead { font-size:16.5px; color:var(--muted); max-width:860px; }
+  .lead { font-size:16.5px; color:var(--muted); max-width:880px; }
   .grad { background:linear-gradient(90deg,var(--primary),var(--primary2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
   .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px; box-shadow:var(--shadow); }
-  .sub { background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:16px; }
   .grid { display:grid; gap:16px; }
   .g2 { grid-template-columns:repeat(2,minmax(0,1fr)); } .g3 { grid-template-columns:repeat(3,minmax(0,1fr)); }
   @media (max-width:980px){ .g3 { grid-template-columns:repeat(2,minmax(0,1fr)); } }
@@ -60,14 +59,11 @@
   ul.ticks { margin:0; padding:0; list-style:none; }
   ul.ticks li { position:relative; padding:5px 0 5px 24px; }
   ul.ticks li::before { content:"✓"; position:absolute; left:2px; color:var(--success); font-weight:900; }
-  ul.minus li::before { content:"–"; color:var(--warn); }
-  .badge { display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:800; padding:4px 10px; border-radius:999px; border:1px solid; letter-spacing:.02em; }
+  .badge { display:inline-flex; align-items:center; font-size:11.5px; font-weight:800; padding:4px 10px; border-radius:999px; border:1px solid; }
   .b-rec { color:var(--success); border-color:color-mix(in srgb,var(--success) 45%,transparent); background:color-mix(in srgb,var(--success) 12%,transparent); }
   .b-alt { color:var(--primary); border-color:color-mix(in srgb,var(--primary) 45%,transparent); background:color-mix(in srgb,var(--primary) 12%,transparent); }
   .b-con { color:var(--warn); border-color:color-mix(in srgb,var(--warn) 45%,transparent); background:color-mix(in srgb,var(--warn) 12%,transparent); }
   .b-no { color:var(--danger); border-color:color-mix(in srgb,var(--danger) 45%,transparent); background:color-mix(in srgb,var(--danger) 12%,transparent); }
-
-  /* problem */
   .req { display:flex; gap:14px; align-items:flex-start; }
   .req .ico { margin:0; flex:none; }
   .req b { display:block; font-size:15px; margin-bottom:2px; }
@@ -91,515 +87,532 @@
   table.fit th, table.fit td { padding:12px 10px; border-bottom:1px solid var(--border); text-align:center; vertical-align:middle; }
   table.fit th { font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); background:var(--card2); }
   table.fit td:first-child, table.fit th:first-child { text-align:left; }
-  table.fit th.recc { color:var(--success); }
-  table.fit td.recc { background:color-mix(in srgb,var(--success) 7%,transparent); }
+  table.fit .recc { background:color-mix(in srgb,var(--success) 7%,transparent); } table.fit th.recc { color:var(--success); }
   .y { color:var(--success); font-weight:900; font-size:16px; } .p { color:var(--warn); font-weight:900; font-size:16px; } .n { color:var(--danger); font-weight:900; font-size:16px; } .q { color:var(--muted); font-weight:900; font-size:16px; }
-  .note { display:block; font-size:11.5px; color:var(--muted); font-weight:500; margin-top:2px; }
+  .note { display:block; font-size:11.5px; color:var(--muted); margin-top:2px; }
 
-  /* journey */
-  .journey { display:grid; grid-template-columns:240px minmax(0,1.1fr) minmax(0,.9fr); gap:18px; align-items:start; }
-  @media (max-width:1080px){ .journey { grid-template-columns:1fr; } .steps { flex-direction:row !important; overflow-x:auto; } .steps button { min-width:180px; } }
-  .steps { display:flex; flex-direction:column; gap:6px; position:sticky; top:74px; }
-  .steps button { display:flex; gap:10px; align-items:flex-start; text-align:left; background:var(--card); border:1px solid var(--border); color:var(--text); border-radius:12px; padding:10px; }
-  .steps button:hover { border-color:var(--primary); }
-  .steps .num { flex:none; width:26px; height:26px; border-radius:50%; display:grid; place-items:center; font-size:12px; font-weight:800; background:var(--card2); border:1px solid var(--border); }
-  .steps b { display:block; font-size:13px; line-height:1.3; }
-  .steps span.who { font-size:11.5px; color:var(--muted); }
-  .steps button.done .num { color:var(--success); border-color:var(--success); background:color-mix(in srgb,var(--success) 15%,transparent); }
-  .steps button.on { border-color:var(--primary); box-shadow:0 0 0 1px var(--primary), 0 10px 22px var(--glow); }
-  .steps button.on .num { background:var(--primary); border-color:var(--primary); color:#fff; }
-  .who-chip { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; padding:4px 10px; border-radius:999px; border:1px solid var(--border); background:var(--card2); color:var(--muted); }
-  .who-chip.h { color:var(--success); border-color:color-mix(in srgb,var(--success) 40%,transparent); }
-  .who-chip.t { color:var(--primary); border-color:color-mix(in srgb,var(--primary) 40%,transparent); }
-  .who-chip.s { color:var(--violet); border-color:color-mix(in srgb,var(--violet) 40%,transparent); }
-  .stitle { font-size:20px; font-weight:800; margin:10px 0 6px; }
+  /* walkthrough */
+  .stepper { display:grid; grid-template-columns:repeat(9,minmax(0,1fr)); gap:6px; margin-bottom:18px; }
+  @media (max-width:1100px){ .stepper { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+  .stepper button { text-align:left; background:var(--card); border:1px solid var(--border); color:var(--text); border-radius:11px; padding:9px 10px; min-height:66px; }
+  .stepper button:hover { border-color:var(--primary); }
+  .stepper .top { display:flex; justify-content:space-between; align-items:center; font-size:11px; font-weight:800; color:var(--muted); }
+  .stepper b { display:block; font-size:12px; line-height:1.3; margin-top:4px; }
+  .stepper button.on { border-color:var(--primary); box-shadow:0 0 0 1px var(--primary), 0 10px 22px var(--glow); }
+  .stepper button.on .top { color:var(--primary); }
+  .stepper button.done .top { color:var(--success); }
+  .walk { display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:18px; align-items:start; }
+  @media (max-width:1050px){ .walk { grid-template-columns:1fr; } }
+  .who { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; padding:4px 10px; border-radius:999px; border:1px solid var(--border); background:var(--card2); }
+  .who.d { color:var(--success); border-color:color-mix(in srgb,var(--success) 40%,transparent); }
+  .who.t { color:var(--primary); border-color:color-mix(in srgb,var(--primary) 40%,transparent); }
+  .who.s { color:var(--violet); border-color:color-mix(in srgb,var(--violet) 40%,transparent); }
+  .stitle { font-size:21px; font-weight:800; margin:10px 0 4px; }
   .navbtns { display:flex; justify-content:space-between; gap:8px; margin-top:14px; }
   .nb { border:1px solid var(--border); background:var(--card2); color:var(--text); font-weight:650; font-size:13px; padding:9px 16px; border-radius:9px; }
   .nb.primary { background:linear-gradient(135deg,var(--primary),var(--primary2)); color:#fff; border-color:transparent; }
-  .behind h4 { font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:0 0 10px; }
-  .behind ol { margin:0; padding-left:20px; }
-  .behind li { padding:5px 0; font-size:14.5px; }
+  .side { position:sticky; top:74px; }
+  .side h4 { font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:0 0 10px; }
+  .side ol { margin:0; padding-left:20px; } .side li { padding:5px 0; font-size:14.5px; }
   .chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:14px; }
-  .chip { font-size:12px; font-weight:700; padding:4px 10px; border-radius:999px; border:1px solid var(--border); background:var(--card2); color:var(--text); }
+  .chip { font-size:12px; font-weight:700; padding:4px 10px; border-radius:999px; border:1px solid var(--border); background:var(--card2); }
 
-  .mock { border:1px solid var(--border); border-radius:14px; overflow:hidden; background:var(--bg2); box-shadow:var(--shadow); margin-top:12px; }
-  .mbar { display:flex; align-items:center; gap:6px; padding:9px 12px; background:var(--card2); border-bottom:1px solid var(--border); }
-  .mbar i { width:10px; height:10px; border-radius:50%; background:#ff5f57; } .mbar i:nth-child(2){ background:#febc2e; } .mbar i:nth-child(3){ background:#28c840; }
-  .mbar .url { margin-left:10px; flex:1; background:var(--bg); border:1px solid var(--border); border-radius:7px; padding:4px 10px; font-size:11.5px; color:var(--muted); font-family:ui-monospace,Menlo,monospace; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .mbody { padding:18px; font-size:14px; }
-  .mail-h { padding:16px 18px 12px; border-bottom:1px solid var(--border); }
-  .mail-h .subj { font-size:16px; font-weight:750; margin-bottom:4px; }
-  .mail-h .meta { font-size:12.5px; color:var(--muted); }
-  .field { display:flex; justify-content:space-between; gap:12px; padding:9px 12px; border:1px solid var(--border); border-radius:9px; background:var(--card); margin-bottom:8px; font-size:13.5px; }
-  .field span:first-child { color:var(--muted); }
-  .hot { border:none; background:linear-gradient(135deg,var(--primary),var(--primary2)); color:#fff; font-weight:700; font-size:13.5px; padding:10px 16px; border-radius:9px; margin-right:6px; animation:pulse 2s infinite; }
-  .hot.green { background:var(--success); color:#03220f; }
-  .ghost { border:1px solid var(--border); background:var(--card2); color:var(--text); font-weight:650; font-size:13.5px; padding:9px 14px; border-radius:9px; }
-  @keyframes pulse { 0%,100% { box-shadow:0 0 0 0 var(--glow);} 50% { box-shadow:0 0 0 7px transparent; } }
-  .toast { padding:9px 12px; border-radius:9px; font-size:13px; font-weight:650; margin-top:10px; }
-  .toast.ok { color:var(--success); background:color-mix(in srgb,var(--success) 12%,transparent); border:1px solid color-mix(in srgb,var(--success) 35%,transparent); }
-  .toast.bad { color:var(--danger); background:color-mix(in srgb,var(--danger) 12%,transparent); border:1px solid color-mix(in srgb,var(--danger) 35%,transparent); }
-  .toast.info { color:var(--primary); background:color-mix(in srgb,var(--primary) 10%,transparent); border:1px solid color-mix(in srgb,var(--primary) 35%,transparent); }
-  .prog { height:10px; border-radius:6px; background:var(--card2); border:1px solid var(--border); overflow:hidden; }
-  .prog div { height:100%; width:0; background:linear-gradient(90deg,var(--primary),var(--primary2)); transition:width .25s linear; }
-  .seg { display:inline-flex; border:1px solid var(--border); border-radius:9px; overflow:hidden; }
-  .seg button { border:none; background:var(--card); color:var(--muted); padding:8px 14px; font-weight:700; font-size:13px; border-right:1px solid var(--border); }
-  .seg button:last-child { border-right:none; }
-  .seg button.on { background:var(--primary); color:#fff; }
-  .qr { display:grid; grid-template-columns:repeat(21,6px); padding:8px; background:#fff; border-radius:6px; width:max-content; }
-  .qr span { width:6px; height:6px; } .qr span.b { background:#0f172a; }
+  /* browser frame */
+  .frame { border:1px solid var(--border); border-radius:14px; overflow:hidden; box-shadow:var(--shadow); margin-top:14px; background:#fff; }
+  .fbar { display:flex; align-items:center; gap:8px; padding:9px 12px; background:#e9edf3; border-bottom:1px solid #d6dce6; }
+  .fbar i { width:11px; height:11px; border-radius:50%; background:#ff5f57; } .fbar i:nth-child(2){ background:#febc2e; } .fbar i:nth-child(3){ background:#28c840; }
+  .furl { margin-left:8px; flex:1; background:#fff; border:1px solid #d6dce6; border-radius:999px; padding:5px 12px; font-size:12px; color:#374151; font-family:ui-monospace,Menlo,monospace; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .furl b { color:#16a34a; font-weight:700; }
+  .pulse { animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { box-shadow:0 0 0 0 rgba(37,99,235,.45);} 50% { box-shadow:0 0 0 7px rgba(37,99,235,0);} }
 
-  /* architecture (simple) */
-  .arch { display:grid; grid-template-columns:150px repeat(4,minmax(0,1fr)); gap:10px; align-items:stretch; }
-  @media (max-width:900px){ .arch { grid-template-columns:1fr; } .arch .lane { margin-top:8px; } .arch .arrow { display:none; } }
+  /* email (light, fixed) */
+  .mail { background:#fff; color:#1f2937; font-size:14px; }
+  .mail .mh { padding:18px 22px 12px; border-bottom:1px solid #eef0f3; }
+  .mail .subj { font-size:19px; font-weight:600; color:#111827; margin-bottom:10px; }
+  .mail .from { display:flex; align-items:center; gap:10px; font-size:13px; color:#4b5563; }
+  .mail .av { width:34px; height:34px; border-radius:50%; display:grid; place-items:center; color:#fff; font-weight:700; font-size:14px; }
+  .mail .mb { padding:18px 22px 22px; line-height:1.6; }
+  .mail .cta { display:inline-block; background:#1a73e8; color:#fff; border:none; border-radius:6px; padding:10px 18px; font-weight:600; font-size:14px; margin:6px 0; }
+  .mail .att { display:inline-flex; align-items:center; gap:8px; border:1px solid #dadce0; border-radius:8px; padding:8px 12px; font-size:13px; margin-top:10px; color:#374151; }
+  .mail .small { font-size:12px; color:#6b7280; }
+
+  /* external portal (light, fixed) */
+  .ext { background:#f6f8fb; color:#0f172a; padding:26px; font-size:14px; }
+  .ext .top { display:flex; align-items:center; gap:10px; font-weight:700; margin-bottom:18px; }
+  .ext .lg { width:28px; height:28px; border-radius:8px; background:#0f766e; color:#fff; display:grid; place-items:center; font-size:14px; }
+  .ext .box { max-width:620px; margin:0 auto; background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:24px; box-shadow:0 2px 10px rgba(15,23,42,.05); }
+  .ext h3 { font-size:20px; margin-bottom:4px; }
+  .ext .meta { font-size:13px; color:#64748b; margin-bottom:16px; }
+  .ext .step { display:grid; grid-template-columns:28px 1fr; gap:12px; padding:14px 0; border-top:1px solid #f1f5f9; }
+  .ext .sn { width:26px; height:26px; border-radius:50%; background:#e0f2f1; color:#0f766e; font-weight:800; font-size:13px; display:grid; place-items:center; }
+  .ext label { display:block; font-size:12.5px; color:#475569; margin:6px 0 4px; }
+  .ext .in { width:100%; border:1px solid #cbd5e1; border-radius:8px; padding:9px 12px; font-size:14px; color:#0f172a; background:#fff; }
+  .ext .btn { width:100%; background:#0f766e; color:#fff; border:none; border-radius:9px; padding:12px; font-weight:700; font-size:14px; margin-top:6px; }
+  .ext .ok { background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; border-radius:10px; padding:14px; text-align:center; }
+  .qr { display:grid; grid-template-columns:repeat(21,5px); padding:6px; background:#fff; border:1px solid #e2e8f0; border-radius:6px; width:max-content; }
+  .qr span { width:5px; height:5px; } .qr span.b { background:#0f172a; }
+
+  /* internal admin portal (dark navy, fixed) */
+  .adm { background:#0b1324; color:#e2e8f0; font-size:13.5px; min-height:340px; }
+  .adm .ah { display:flex; justify-content:space-between; align-items:center; padding:12px 18px; border-bottom:1px solid #1e293b; background:#0f1a30; }
+  .adm .ah b { font-size:14px; } .adm .ah span { font-size:12px; color:#94a3b8; }
+  .adm .ab { padding:18px; }
+  .adm .pane { background:#111d35; border:1px solid #1f2d4a; border-radius:12px; padding:16px; margin-bottom:14px; }
+  .adm .pane h4 { font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:#93c5fd; margin:0 0 10px; }
+  .adm .row { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+  .adm .fld { background:#0b1324; border:1px solid #23314f; border-radius:8px; padding:8px 10px; }
+  .adm .fld small { display:block; font-size:11px; color:#94a3b8; } .adm .fld b { font-size:13px; font-weight:600; }
+  .adm table { width:100%; border-collapse:collapse; font-size:13px; }
+  .adm th, .adm td { text-align:left; padding:9px 8px; border-bottom:1px solid #1e293b; }
+  .adm th { color:#94a3b8; font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; }
+  .adm .st { display:inline-block; font-size:11px; font-weight:800; padding:2px 8px; border-radius:999px; color:#0b1324; }
+  .adm .btn { border:none; border-radius:8px; padding:9px 14px; font-weight:700; font-size:13px; color:#fff; background:#3b82f6; margin-right:6px; }
+  .adm .btn.g { background:#10b981; color:#052e1d; } .adm .btn.r { background:#ef4444; } .adm .btn.ghost { background:transparent; border:1px solid #334155; color:#cbd5e1; }
+  .adm .kv { display:grid; grid-template-columns:190px 1fr; gap:6px 12px; font-size:13px; }
+  .adm .kv span { color:#94a3b8; }
+  .adm .seg { display:inline-flex; border:1px solid #334155; border-radius:8px; overflow:hidden; }
+  .adm .seg button { border:none; background:#0b1324; color:#cbd5e1; padding:7px 14px; font-weight:700; font-size:12.5px; border-right:1px solid #334155; }
+  .adm .seg button:last-child { border-right:none; } .adm .seg button.on { background:#3b82f6; color:#fff; }
+  .adm .toast { border-radius:9px; padding:10px 12px; font-size:13px; font-weight:600; margin-top:10px; }
+  .adm .toast.ok { background:rgba(16,185,129,.12); border:1px solid rgba(16,185,129,.4); color:#6ee7b7; }
+  .adm .toast.bad { background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.35); color:#fca5a5; }
+  .adm .check { display:flex; gap:10px; align-items:center; padding:7px 0; color:#64748b; transition:color .3s; }
+  .adm .check .d { width:18px; height:18px; border-radius:50%; border:2px solid #334155; display:grid; place-items:center; font-size:10px; flex:none; transition:all .3s; }
+  .adm .check.done { color:#e2e8f0; } .adm .check.done .d { background:#10b981; border-color:#10b981; color:#052e1d; }
+
+  /* SFTPGo WebClient (fixed, mirrors the real UI) */
+  .sg { display:grid; grid-template-columns:180px 1fr; min-height:360px; background:#f4f5f7; color:#1f2937; font-size:13px; }
+  .sg-side { background:#0a0a0c; color:#e5e7eb; padding:18px 12px; }
+  .sg-logo { display:flex; align-items:center; gap:10px; font-weight:700; font-size:14px; margin:0 4px 22px; }
+  .sg-logo i { width:28px; height:24px; border-radius:5px; background:linear-gradient(180deg,#fbbf24,#f59e0b); display:block; position:relative; }
+  .sg-logo i::after { content:""; position:absolute; left:6px; right:6px; bottom:-5px; height:3px; background:#f59e0b; border-radius:2px; }
+  .sg-nav div { padding:9px 12px; border-radius:8px; color:#a1a1aa; margin-bottom:4px; display:flex; gap:10px; align-items:center; }
+  .sg-nav div.on { background:#1c1c20; color:#fff; }
+  .sg-main { padding:20px; }
+  .sg-topr { display:flex; justify-content:flex-end; gap:14px; color:#6b7280; margin-bottom:12px; }
+  .sg-card { background:#fff; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,.06); padding:16px; }
+  .sg-search { border:1px solid #e5e7eb; border-radius:6px; padding:7px 10px; width:200px; color:#9ca3af; font-size:12.5px; }
+  .sg-crumb { display:inline-flex; gap:6px; align-items:center; background:#eff6ff; color:#2563eb; border-radius:5px; padding:3px 9px; margin:12px 0 6px; font-size:12px; font-weight:600; }
+  .sg table { width:100%; border-collapse:collapse; }
+  .sg th, .sg td { text-align:left; padding:10px 6px; border-bottom:1px solid #f1f2f4; font-size:12.5px; }
+  .sg th { color:#6b7280; font-weight:600; }
+  .sg .fi { display:inline-block; width:14px; height:16px; border-radius:2px; background:#c7d7fe; margin-right:8px; vertical-align:-3px; }
+  .sg .act { width:26px; height:26px; border-radius:6px; background:#f3f4f6; border:none; color:#4b5563; font-size:12px; }
+  .sg .act.hl { background:#2563eb; color:#fff; }
+  .sg-foot { display:flex; justify-content:space-between; align-items:center; color:#6b7280; font-size:12px; margin-top:10px; }
+  .sg-page { width:26px; height:26px; border-radius:6px; background:#2563eb; color:#fff; display:grid; place-items:center; font-size:12px; }
+  .dlbar { display:flex; gap:12px; align-items:center; background:#fff; border-top:1px solid #e5e7eb; padding:10px 14px; color:#1f2937; font-size:12.5px; }
+  .dlbar .pg { flex:1; height:8px; background:#e5e7eb; border-radius:5px; overflow:hidden; }
+  .dlbar .pg div { height:100%; width:0; background:#2563eb; transition:width .2s linear; }
+  /* SFTPGo login */
+  .sgl { background:#f4f5f7; color:#111827; min-height:360px; display:grid; place-items:center; padding:24px; font-size:13.5px; }
+  .sgl .bx { width:360px; max-width:100%; background:#fff; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,.07); padding:26px; }
+  .sgl .lt { display:flex; align-items:center; gap:10px; font-weight:700; font-size:16px; margin-bottom:6px; }
+  .sgl .lt i { width:30px; height:26px; border-radius:5px; background:linear-gradient(180deg,#fbbf24,#f59e0b); display:block; }
+  .sgl label { display:block; font-size:12.5px; color:#4b5563; margin:12px 0 4px; }
+  .sgl .in { width:100%; border:1px solid #d1d5db; border-radius:7px; padding:9px 11px; font-size:14px; color:#111827; background:#fff; }
+  .sgl .btn { width:100%; border:none; border-radius:7px; padding:11px; background:#2563eb; color:#fff; font-weight:700; font-size:14px; margin-top:16px; }
+  .sgl .err { background:#fef2f2; border:1px solid #fecaca; color:#991b1b; border-radius:8px; padding:10px 12px; font-size:13px; margin-top:12px; }
+
+  /* how it works */
+  .arch { display:grid; grid-template-columns:150px repeat(4,minmax(0,1fr)); gap:12px; align-items:stretch; }
+  @media (max-width:900px){ .arch { grid-template-columns:1fr; } }
   .lane { display:flex; align-items:center; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); }
   .abox { position:relative; background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:12px 14px; }
-  .abox b { display:block; font-size:14px; }
-  .abox span { font-size:12.5px; color:var(--muted); }
+  .abox b { display:block; font-size:14px; } .abox span { font-size:12.5px; color:var(--muted); }
   .abox.k { border-left:4px solid var(--primary); } .abox.d { border-left:4px solid var(--teal); } .abox.e { border-left:4px solid var(--violet); } .abox.a { border-left:4px solid var(--warn); }
-  .abox:not(:last-child)::after { content:"→"; position:absolute; right:-14px; top:50%; transform:translateY(-50%); color:var(--muted); font-weight:900; z-index:2; }
+  .abox:not(:last-child)::after { content:"→"; position:absolute; right:-14px; top:50%; transform:translateY(-50%); color:var(--muted); font-weight:900; }
   @media (max-width:900px){ .abox::after { display:none; } }
-
   details { border:1px solid var(--border); border-radius:12px; background:var(--card); margin-top:10px; }
-  details summary { cursor:pointer; padding:14px 16px; font-weight:700; list-style:none; display:flex; justify-content:space-between; align-items:center; }
+  details summary { cursor:pointer; padding:14px 16px; font-weight:700; list-style:none; display:flex; justify-content:space-between; }
   details summary::-webkit-details-marker { display:none; }
-  details summary::after { content:"+"; font-size:18px; color:var(--muted); }
-  details[open] summary::after { content:"–"; }
+  details summary::after { content:"+"; font-size:18px; color:var(--muted); } details[open] summary::after { content:"–"; }
   details .inner { padding:0 16px 16px; font-size:14px; }
   table.simple { width:100%; border-collapse:collapse; font-size:13.5px; }
   table.simple td, table.simple th { text-align:left; padding:9px 10px; border-bottom:1px solid var(--border); vertical-align:top; }
   table.simple th { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.05em; }
 
-  .phase .wk { font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.07em; color:var(--primary); }
-  footer { max-width:1200px; margin:0 auto; padding:20px 24px 40px; color:var(--muted); font-size:12.5px; border-top:1px solid var(--border); display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+  footer { max-width:1240px; margin:0 auto; padding:20px 24px 40px; color:var(--muted); font-size:12.5px; border-top:1px solid var(--border); display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; }
   .kbd { font-family:ui-monospace,Menlo,monospace; font-size:11px; border:1px solid var(--border); border-bottom-width:2px; border-radius:5px; padding:0 5px; background:var(--card2); }
   @media print {
     :root, [data-theme] { --bg:#fff; --bg2:#fff; --card:#fff; --card2:#f4f6fa; --border:#d8dee9; --text:#0f172a; --muted:#475569; --shadow:none; }
-    header, .navbtns { display:none !important; }
-    .tab { display:block !important; page-break-after:always; }
-    details { break-inside:avoid; } details:not([open]) .inner { display:block; }
-    body::before { display:none; } .hot { animation:none; }
+    header, .navbtns { display:none !important; } .tab { display:block !important; page-break-after:always; } body::before { display:none; }
   }
 </style>
 </head>
 <body>
 <header>
   <div class="hdr">
-    <div class="brand"><div class="logo">⛨</div><span>Secure Video Access</span></div>
+    <div class="brand">
+      <div class="dots"><i style="background:#4285f4"></i><i style="background:#ea4335"></i><i style="background:#fbbc04"></i><i style="background:#34a853"></i></div>
+      <div class="gc">Google Cloud <span>· Secure Video Access for Hospitals</span></div>
+    </div>
     <nav class="tabs" id="tabs"></nav>
     <button class="tool" onclick="toggleTheme()" title="Light / dark (T)">◐</button>
   </div>
 </header>
 
 <main>
-<!-- ====================================================== 1. PROBLEM -->
-<section class="tab" id="tab-problem">
-  <div class="eyebrow">The problem</div>
-  <h1 class="big">Hospitals need surgical videos. <span class="grad">Sharing them has to be secure, approved, and short-lived.</span></h1>
-  <p class="lead">A healthcare client needs to share very large procedure videos with doctors and IT staff at outside hospitals. The files contain patient information, so every share must meet HIPAA requirements. The client wants a solution soon, with as little to run as possible.</p>
+<!-- ================================================== 1. THE CHALLENGE -->
+<section class="tab" id="tab-challenge">
+  <div class="eyebrow">The challenge</div>
+  <h1 class="big">Doctors need procedure videos. <span class="grad">Sharing them must be secure, approved and time-limited.</span></h1>
+  <p class="lead">Doctors at your partner hospitals regularly ask for recordings of procedures. The files are large and contain patient information. Every share needs to be safe, compliant, and easy for a busy clinician to use.</p>
 
   <div class="section grid g3">
-    <div class="card"><div class="ico">🏥</div><h3>Who needs the files</h3><p class="muted">Staff at outside hospitals. They don't have accounts with the client and shouldn't need a Google account.</p></div>
-    <div class="card"><div class="ico">📦</div><h3>What they're downloading</h3><p class="muted">Procedure videos, typically hundreds of gigabytes and sometimes over a terabyte per request.</p></div>
-    <div class="card"><div class="ico">🧑‍💼</div><h3>Who decides</h3><p class="muted">A small team at the client receives each request, checks it, and approves or declines it.</p></div>
+    <div class="card"><div class="ico">🩺</div><h3>Who needs the videos</h3><p class="muted">Doctors and clinical staff at partner hospitals. They don't have accounts with you and shouldn't need a Google account.</p></div>
+    <div class="card"><div class="ico">📦</div><h3>What they're downloading</h3><p class="muted">Procedure recordings, often hundreds of gigabytes and sometimes more than a terabyte.</p></div>
+    <div class="card"><div class="ico">🧑‍💼</div><h3>Who decides</h3><p class="muted">Your team receives each request, checks it, and approves or declines it.</p></div>
   </div>
 
   <div class="section">
-    <div class="eyebrow">What any solution must do</div>
+    <div class="eyebrow">What the solution must do</div>
     <div class="grid g2">
-      <div class="card req"><div class="ico">🛡️</div><div><b>Meet HIPAA requirements</b><span>Encryption, access control, audit logs, and a BAA covering every service that touches the data.</span></div></div>
-      <div class="card req"><div class="ico">🔐</div><div><b>Password + multi-factor sign-in</b><span>Outside users set their own password and use an authenticator app.</span></div></div>
-      <div class="card req"><div class="ico">✋</div><div><b>Approval before access</b><span>Nothing is downloadable until a named person at the client approves it.</span></div></div>
+      <div class="card req"><div class="ico">🛡️</div><div><b>Meet HIPAA requirements</b><span>Encryption, access control, a full audit trail, and a BAA covering every service that touches the data.</span></div></div>
+      <div class="card req"><div class="ico">🔐</div><div><b>Password + multi-factor sign-in</b><span>Doctors set their own password and confirm with an authenticator app.</span></div></div>
+      <div class="card req"><div class="ico">✋</div><div><b>Approval before access</b><span>Nothing can be downloaded until someone on your team approves it.</span></div></div>
       <div class="card req"><div class="ico">⏳</div><div><b>Time-limited access</b><span>Access ends after a set window, and the shared copies are deleted.</span></div></div>
-      <div class="card req"><div class="ico">📶</div><div><b>Reliable large downloads</b><span>Terabyte-scale files must download reliably, and resume if the connection drops.</span></div></div>
-      <div class="card req"><div class="ico">☁️</div><div><b>Keep data in the client's Google Cloud</b><span>The videos already live there. Fewer vendors in the path means less risk.</span></div></div>
-    </div>
-  </div>
-
-  <div class="section card" style="border-color:color-mix(in srgb,var(--warn) 45%,var(--border))">
-    <div class="eyebrow" style="color:var(--warn)">Constraints</div>
-    <div class="grid g2">
-      <p><b>It's urgent.</b> <span class="muted">The client wants something working soon, so reusing proven pieces matters.</span></p>
-      <p><b>Minimal infrastructure.</b> <span class="muted">The client would rather not run servers. We weigh every option against this.</span></p>
+      <div class="card req"><div class="ico">📶</div><div><b>Easy, reliable downloads</b><span>Simple enough for a clinician in a browser, robust enough for very large files.</span></div></div>
+      <div class="card req"><div class="ico">☁️</div><div><b>Data stays in your Google Cloud</b><span>The videos already live there. Fewer vendors in the path means less risk.</span></div></div>
     </div>
   </div>
 </section>
 
-<!-- ====================================================== 2. OPTIONS -->
+<!-- ================================================== 2. OPTIONS -->
 <section class="tab" id="tab-options">
   <div class="eyebrow">Options we explored</div>
   <h2 class="sec">Five ways to solve it, and how each one fits</h2>
-  <p class="lead">We looked at the client's original idea (Files.com), three Google-native alternatives, and the solution we built as a proof of concept.</p>
-
+  <p class="lead">We looked at the Files.com approach you'd been considering, three Google-native alternatives, and the solution we built and tested as a proof of concept.</p>
   <div class="section opts" id="opts"></div>
-
-  <div class="section card" style="padding:0;overflow:auto">
-    <table class="fit" id="fit"></table>
-  </div>
-  <p class="muted" style="font-size:13px;margin-top:8px"><span class="y">✓</span> meets it &nbsp; <span class="p">◐</span> partly / with extra work &nbsp; <span class="n">✕</span> doesn't meet it &nbsp; <span class="q">?</span> still to confirm</p>
-
+  <div class="section card" style="padding:0;overflow:auto"><table class="fit" id="fit"></table></div>
+  <p class="muted" style="font-size:13px;margin-top:8px"><span class="y">✓</span> meets it &nbsp; <span class="p">◐</span> partly / with extra work &nbsp; <span class="n">✕</span> doesn't meet it &nbsp; <span class="q">?</span> to be confirmed</p>
   <div class="section grid g2">
     <div class="card" style="border-color:var(--success)">
       <span class="badge b-rec">Our recommendation</span>
       <h3 style="margin-top:10px">SFTPGo on Google Cloud</h3>
-      <p class="muted">It's the only option that checks every requirement today: data stays in the client's cloud, password + MFA sign-in, approval and expiry built in, and reliable resume for very large files. It's also already built as a working proof of concept, which helps with the urgency.</p>
-      <p style="margin-top:10px"><b>The trade-off:</b> <span class="muted">the client runs a small amount of infrastructure. Google-managed Kubernetes (GKE Autopilot) and a managed database keep that light.</span></p>
+      <p class="muted">It meets every requirement today: data stays in your Google Cloud, password + MFA sign-in, approval and expiry built in, and a simple browser experience for doctors, with a robust option for very large files. It's already built and tested as a working proof of concept.</p>
+      <p style="margin-top:10px"><b>The trade-off:</b> <span class="muted">a small amount of infrastructure for your team. Google-managed Kubernetes and a managed database keep that light.</span></p>
     </div>
     <div class="card" style="border-color:var(--primary)">
       <span class="badge b-alt">Strong alternative</span>
       <h3 style="margin-top:10px">Serverless portal</h3>
-      <p class="muted">If "no infrastructure at all" turns out to be a hard line, this is the Google-native fallback. Hospital users sign in with password + MFA and download directly from Cloud Storage using short-lived links. There are no servers, and most of the proof-of-concept pieces carry over.</p>
-      <p style="margin-top:10px"><b>The trade-off:</b> <span class="muted">for terabyte-scale files, hospitals should use a download manager rather than a plain browser.</span></p>
+      <p class="muted">If running no infrastructure at all is essential, this is the Google-native alternative. Doctors sign in with password + MFA and download directly from Cloud Storage using short-lived links. There are no servers to run.</p>
+      <p style="margin-top:10px"><b>The trade-off:</b> <span class="muted">very large files are best downloaded with a download manager rather than a plain browser.</span></p>
     </div>
   </div>
 </section>
 
-<!-- ====================================================== 3. RECOMMENDED -->
-<section class="tab" id="tab-solution">
-  <div class="eyebrow">Recommended solution · SFTPGo on Google Cloud</div>
-  <h2 class="sec">How it works, step by step</h2>
-  <p class="lead">Click through the journey. Each step shows what the person sees and what happens behind the scenes.</p>
+<!-- ================================================== 3. WALKTHROUGH -->
+<section class="tab" id="tab-walk">
+  <div class="eyebrow">Solution walkthrough · SFTPGo on Google Cloud</div>
+  <h2 class="sec">What doctors and your team will see</h2>
+  <p class="lead">Click through the screens, or use the highlighted button on each one. Screens are illustrative mockups of the proof of concept.</p>
+  <div class="section stepper" id="stepper"></div>
+  <div class="walk" id="walk"></div>
+</section>
 
-  <div class="section journey" id="journey"></div>
-
-  <div class="section">
-    <div class="eyebrow">How it fits together</div>
-    <div class="card">
-      <div class="arch">
-        <div class="lane">🏥 Hospital user</div>
-        <div class="abox e"><b>Front door</b><span>Only approved hospital networks get through (Cloud Armor + network allowlist)</span></div>
-        <div class="abox k"><b>Setup page &amp; transfer server</b><span>Password + MFA setup, then SFTP or browser downloads (SFTPGo on GKE Autopilot)</span></div>
-        <div class="abox d"><b>Private download folder</b><span>Only the approved files, encrypted with the hospital's own key (Cloud Storage + Cloud HSM)</span></div>
-        <div class="abox a"><b>Audit trail</b><span>Every sign-in and download recorded for 6 years (Cloud Logging + BigQuery)</span></div>
-
-        <div class="lane">🧑‍💼 Client team</div>
-        <div class="abox e"><b>Company sign-in</b><span>Only approved staff get in (Identity-Aware Proxy)</span></div>
-        <div class="abox k"><b>Review console</b><span>Log, invite, approve, revoke (Cloud Run)</span></div>
-        <div class="abox d"><b>Video archive</b><span>Files are copied out only on approval (Cloud Storage)</span></div>
-        <div class="abox a"><b>Emails</b><span>Invite, review alert, access approved (client's email relay)</span></div>
-      </div>
+<!-- ================================================== 4. HOW IT WORKS -->
+<section class="tab" id="tab-how">
+  <div class="eyebrow">How it works</div>
+  <h2 class="sec">Built entirely on Google Cloud</h2>
+  <p class="lead">Two separate front doors: one for doctors, one for your team. Behind them, everything runs inside your Google Cloud project and is recorded.</p>
+  <div class="section card">
+    <div class="arch">
+      <div class="lane">🩺 Doctors</div>
+      <div class="abox e"><b>Protected front door</b><span>Only approved hospital networks get through (Cloud Armor + network allowlist)</span></div>
+      <div class="abox k"><b>Setup page &amp; download site</b><span>Password + MFA setup, then browser or SFTP downloads (SFTPGo on GKE Autopilot)</span></div>
+      <div class="abox d"><b>Private download folder</b><span>Only the approved files, encrypted with the hospital's own key (Cloud Storage + Cloud HSM)</span></div>
+      <div class="abox a"><b>Audit trail</b><span>Every sign-in and download recorded for 6 years (Cloud Logging + BigQuery)</span></div>
+      <div class="lane">🧑‍💼 Your team</div>
+      <div class="abox e"><b>Company sign-in</b><span>Only approved staff get in (Identity-Aware Proxy)</span></div>
+      <div class="abox k"><b>Review console</b><span>Log, invite, approve, revoke (Cloud Run)</span></div>
+      <div class="abox d"><b>Video archive</b><span>Files are copied out only when approved (Cloud Storage)</span></div>
+      <div class="abox a"><b>Notifications</b><span>Invite, ready-for-review and access-approved emails</span></div>
     </div>
   </div>
-
   <div class="section grid g2">
     <div class="card">
       <div class="eyebrow">Why it meets HIPAA</div>
       <ul class="ticks">
-        <li><b>One BAA:</b> every service that touches the videos is a Google Cloud service under the client's BAA</li>
-        <li><b>Strong sign-in:</b> password + authenticator code for hospital users, company sign-in + MFA for staff</li>
-        <li><b>Encrypted:</b> in transit (SFTP / HTTPS), and at rest with a separate key per hospital</li>
-        <li><b>Minimum access:</b> each user sees only their approved files, read-only</li>
+        <li><b>One BAA:</b> every service that touches the videos is a Google Cloud service under your BAA</li>
+        <li><b>Strong sign-in:</b> password + authenticator code for doctors, company sign-in + MFA for your team</li>
+        <li><b>Encrypted:</b> in transit, and at rest with a separate key per hospital</li>
+        <li><b>Minimum access:</b> each doctor sees only their approved files, read-only</li>
         <li><b>Automatic expiry:</b> sign-in stops and copies are deleted when the window ends</li>
         <li><b>Audit trail:</b> every request, approval, sign-in and download is kept for 6 years</li>
       </ul>
-      <p class="muted" style="font-size:13px;margin-top:10px">HIPAA is a shared responsibility: Google secures the infrastructure, the solution enforces the safeguards, and the client keeps its policies and reviews in place.</p>
     </div>
     <div class="card">
       <div class="eyebrow">Why SFTPGo</div>
       <ul class="ticks">
-        <li>Supports both <b>password + MFA</b> and <b>SFTP</b>, which no fully managed Google option offers today</li>
-        <li><b>Resumes</b> large downloads exactly where they stopped</li>
-        <li>Works with tools hospital IT already uses (Cyberduck, WinSCP), <b>plus a browser option</b></li>
-        <li>Reads <b>directly from Cloud Storage</b>, with no file servers or copies on disk</li>
+        <li>Supports <b>password + MFA</b> for people outside your organization</li>
+        <li><b>Simple browser downloads</b> for doctors, plus <b>SFTP</b> for very large files, which resumes if interrupted</li>
+        <li>Reads <b>directly from Cloud Storage</b>, with no file servers or extra copies</li>
         <li>Locks each account to <b>one folder, the hospital's network, and an end date</b></li>
+        <li>Driven automatically by the review console, so nothing is set up by hand</li>
         <li>Open source, with an <b>Enterprise edition</b> for commercial support</li>
       </ul>
     </div>
   </div>
-
   <div class="section">
-    <div class="eyebrow">More detail (expand)</div>
-    <details>
-      <summary>What the client would run</summary>
-      <div class="inner">
-        <p class="muted" style="margin-bottom:10px">Google manages the servers underneath. The client owns the application layer:</p>
-        <table class="simple">
-          <tr><th>Piece</th><th>Google handles</th><th>Client handles</th></tr>
-          <tr><td>GKE Autopilot (runs SFTPGo + setup page)</td><td>Nodes, OS patching, scaling, cluster upgrades</td><td>Deploying app updates; SFTPGo version upgrades</td></tr>
-          <tr><td>Cloud SQL (SFTPGo's user accounts)</td><td>Patching, backups, high-availability failover</td><td>Size, maintenance window, major-version upgrades</td></tr>
-          <tr><td>Review console (Cloud Run)</td><td>Everything below the code (serverless)</td><td>App updates</td></tr>
-          <tr><td>Certificates, network allowlist, email relay</td><td>Managed certificates, load balancers</td><td>Keeping the hospital list current</td></tr>
-        </table>
-        <p class="muted" style="margin-top:10px">Everything is defined in Terraform and covered by an automated end-to-end test, so changes are repeatable.</p>
-      </div>
-    </details>
-    <details>
-      <summary>Google Cloud services used</summary>
-      <div class="inner">
-        <table class="simple">
-          <tr><td><b>GKE Autopilot</b></td><td>Runs SFTPGo (2+ copies) and the setup page on private nodes</td></tr>
-          <tr><td><b>Cloud Run + Identity-Aware Proxy</b></td><td>Review console, reachable only by approved staff</td></tr>
-          <tr><td><b>Cloud Armor + load balancers</b></td><td>Web protection and the hospital network allowlist</td></tr>
-          <tr><td><b>Cloud Storage</b></td><td>Video archive, plus private per-request download folders with automatic deletion</td></tr>
-          <tr><td><b>Cloud KMS / Cloud HSM</b></td><td>A separate hardware-protected key per hospital, with an instant "off switch"</td></tr>
-          <tr><td><b>Cloud SQL (PostgreSQL)</b></td><td>SFTPGo's accounts and MFA settings, on a private network only</td></tr>
-          <tr><td><b>Secret Manager</b></td><td>Email relay credentials</td></tr>
-          <tr><td><b>Cloud Logging + BigQuery</b></td><td>6-year audit trail and reporting</td></tr>
-        </table>
-      </div>
-    </details>
-    <details>
-      <summary>Security controls at a glance</summary>
-      <div class="inner">
-        <ul class="ticks">
-          <li>Accounts start switched off; files are copied only at approval, into a folder for that request alone</li>
-          <li>Hospital access only from approved networks, checked at Google's edge and again on the account</li>
-          <li>The review console is never exposed publicly; it reaches SFTPGo over a private network</li>
-          <li>No passwords or keys stored in code; workloads use short-lived Google credentials</li>
-          <li>Revoke in one click, or switch off a hospital's key to cut off its files instantly</li>
-        </ul>
-      </div>
-    </details>
-  </div>
-</section>
-
-<!-- ====================================================== 4. NEXT STEPS -->
-<section class="tab" id="tab-next">
-  <div class="eyebrow">Next steps</div>
-  <h2 class="sec">What we need to decide, and how we get there</h2>
-
-  <div class="section grid g3">
-    <div class="card"><div class="ico">❓</div><h3>Confirm with the client</h3>
-      <ul class="ticks" style="font-size:14px">
-        <li>Is running light infrastructure acceptable, or is "no infrastructure" a hard line?</li>
-        <li>Who downloads: hospital IT, clinicians, or both?</li>
-        <li>Typical download size per request</li>
-      </ul></div>
-    <div class="card"><div class="ico">🔎</div><h3>Confirm with Google</h3>
-      <ul class="ticks" style="font-size:14px">
-        <li>HIPAA coverage for every service in the chosen design</li>
-        <li>Cloud FTP roadmap for password + MFA sign-in</li>
-        <li>SFTPGo Enterprise availability and support terms</li>
-      </ul></div>
-    <div class="card"><div class="ico">📋</div><h3>Needed from the client</h3>
-      <ul class="ticks" style="font-size:14px">
-        <li>Reviewer group that can approve requests</li>
-        <li>Email relay and sender address</li>
-        <li>Hospital list: email domains and networks</li>
-      </ul></div>
-  </div>
-
-  <div class="section">
-    <div class="eyebrow">Path to production</div>
-    <div class="grid g3">
-      <div class="card phase"><div class="wk" style="color:var(--success)">Now</div><h3 style="margin:6px 0">Working proof of concept</h3><p class="muted">The full journey runs in a Google Cloud sandbox, deployed with one command and checked by automated tests.</p></div>
-      <div class="card phase"><div class="wk">Weeks 1–2</div><h3 style="margin:6px 0">Connect &amp; harden</h3><p class="muted">The client's project, web address, sign-in group, email relay and hospital list. Swap in SFTPGo Enterprise.</p></div>
-      <div class="card phase"><div class="wk">Weeks 3–4</div><h3 style="margin:6px 0">Review &amp; first hospital</h3><p class="muted">Security review, then onboard a pilot hospital. Timing depends on the client's review process.</p></div>
-    </div>
-  </div>
-
-  <div class="section card" style="text-align:center">
-    <h3 style="font-size:18px">Suggested next meeting</h3>
-    <p class="muted" style="max-width:700px;margin:6px auto 0">A 45-minute session with the client to confirm the infrastructure preference and who downloads, then a live run of the proof of concept.</p>
+    <div class="eyebrow">More detail</div>
+    <details><summary>Google Cloud services used</summary><div class="inner"><table class="simple">
+      <tr><td><b>GKE Autopilot</b></td><td>Runs SFTPGo and the setup page on private, Google-managed nodes</td></tr>
+      <tr><td><b>Cloud Run + Identity-Aware Proxy</b></td><td>Review console, reachable only by your approved staff</td></tr>
+      <tr><td><b>Cloud Armor + load balancers</b></td><td>Web protection and the hospital network allowlist</td></tr>
+      <tr><td><b>Cloud Storage</b></td><td>Video archive, plus private per-request download folders that delete themselves</td></tr>
+      <tr><td><b>Cloud KMS / Cloud HSM</b></td><td>A separate hardware-protected key per hospital, with an instant off switch</td></tr>
+      <tr><td><b>Cloud SQL</b></td><td>Doctor accounts and MFA settings, on a private network only</td></tr>
+      <tr><td><b>Cloud Logging + BigQuery</b></td><td>6-year audit trail and reporting</td></tr></table></div></details>
+    <details><summary>What your team would run</summary><div class="inner"><table class="simple">
+      <tr><th>Piece</th><th>Google handles</th><th>Your team handles</th></tr>
+      <tr><td>GKE Autopilot</td><td>Nodes, patching, scaling, cluster upgrades</td><td>App and SFTPGo version updates</td></tr>
+      <tr><td>Cloud SQL</td><td>Patching, backups, failover</td><td>Size and maintenance window</td></tr>
+      <tr><td>Review console (Cloud Run)</td><td>Everything below the code</td><td>App updates</td></tr>
+      <tr><td>Hospital list &amp; email</td><td>Certificates and load balancers</td><td>Keeping the hospital list current</td></tr></table>
+      <p class="muted" style="margin-top:10px">Everything is defined as code and checked by automated tests, so changes are repeatable.</p></div></details>
+    <details><summary>Security controls at a glance</summary><div class="inner"><ul class="ticks">
+      <li>Accounts start switched off; files are copied only at approval, into a folder for that request alone</li>
+      <li>Doctors can only connect from approved hospital networks</li>
+      <li>The review console is never exposed publicly and talks to the download service over a private network</li>
+      <li>No stored keys in code; services use short-lived Google credentials</li>
+      <li>Revoke in one click, or switch off a hospital's key to cut off its files instantly</li></ul></div></details>
   </div>
 </section>
 </main>
 
 <footer>
-  <span>Secure Video Access for Hospitals · Options &amp; recommendation</span>
-  <span><span class="kbd">1</span>–<span class="kbd">4</span> tabs · <span class="kbd">←</span> <span class="kbd">→</span> journey steps · <span class="kbd">T</span> theme</span>
+  <span>Prepared by Google Cloud · Screens are illustrative mockups of the proof of concept</span>
+  <span><span class="kbd">1</span>–<span class="kbd">4</span> tabs · <span class="kbd">←</span> <span class="kbd">→</span> walkthrough · <span class="kbd">T</span> theme</span>
 </footer>
 
 <script>
-const TABS = [['problem','The problem'],['options','Options we explored'],['solution','Recommended solution'],['next','Next steps']];
+const TABS = [['challenge','The challenge'],['options','Options we explored'],['walk','Solution walkthrough'],['how','How it works']];
 
 /* ---------------- Options ---------------- */
 const OPTIONS = [
   { name:`SFTPGo on Google Cloud`, tag:['b-rec','Recommended'], rec:true,
-    what:`An open-source transfer server on Google-managed Kubernetes, plus an approval console. Our working proof of concept.`,
-    pros:[`Meets every requirement today`,`SFTP + browser downloads, with resume`,`Already built and tested`],
-    cons:[`Some infrastructure for the client to run`],
-    verdict:`Best overall fit. Light infrastructure, Google-managed underneath.` },
+    what:`An open-source transfer server on Google-managed Kubernetes, plus a review console. Our working proof of concept.`,
+    pros:[`Meets every requirement today`,`Browser downloads, plus SFTP for very large files`,`Already built and tested`],
+    cons:[`A small amount of infrastructure to run`], verdict:`Best overall fit.` },
   { name:`Serverless portal`, tag:['b-alt','Strong alternative'],
-    what:`A sign-in portal (Cloud Run + Identity Platform) that hands out short-lived download links straight from Cloud Storage.`,
-    pros:[`No servers to run`,`Password + MFA`,`Reuses most of the proof of concept`],
-    cons:[`Browser-only users may struggle with 1 TB+ files`,`Approval workflow still to build`],
-    verdict:`The pick if "no infrastructure" is a hard line.` },
+    what:`A sign-in portal (Cloud Run + Identity Platform) that issues short-lived download links straight from Cloud Storage.`,
+    pros:[`No servers to run`,`Password + MFA`,`Reuses much of the proof of concept`],
+    cons:[`1 TB+ files best with a download manager`,`Approval flow still to build`], verdict:`Best if running no infrastructure is essential.` },
   { name:`Files.com + Cloud Storage`, tag:['b-con','Considered'],
-    what:`The client's original idea: a managed file-sharing service connected to their storage.`,
+    what:`A managed file-sharing service connected to your storage.`,
     pros:[`Fully managed`,`Polished user experience`],
-    cons:[`Data passes through a second vendor`,`Second BAA needed`,`Approval and expiry need extra work`],
-    verdict:`Works, but adds a vendor and moves data outside their cloud.` },
+    cons:[`Data passes through a second vendor`,`Second BAA needed`,`Approval and expiry need extra work`], verdict:`Works, but adds a vendor in the data path.` },
   { name:`Cloud FTP`, tag:['b-no','Not a fit today'],
     what:`Google's managed SFTP service in front of Cloud Storage.`,
     pros:[`Fully managed by Google`,`Network allowlists built in`],
-    cons:[`Sign-in is SSH keys only, with no password + MFA`,`No approval or expiry built in`],
-    verdict:`Watch the roadmap for password + MFA support.` },
+    cons:[`Sign-in is SSH keys only, with no password + MFA`,`SFTP only, no browser`], verdict:`Not suited to doctors today.` },
   { name:`Google Drive / Workspace`, tag:['b-no','Not a fit'],
     what:`Share the videos from Drive with outside users.`,
     pros:[`No infrastructure`,`Expiring access`],
-    cons:[`Moves data out of Google Cloud`,`Outside users sign in with an email PIN, not MFA`,`No approval step`],
-    verdict:`Too weak on sign-in and control for this use case.` }
+    cons:[`Moves data out of Google Cloud`,`Outside users sign in with an email PIN, not MFA`,`No approval step`], verdict:`Too weak on sign-in and control.` }
 ];
-const FIT_ROWS = [
-  ['Data stays in the client\'s Google Cloud', ['y'],['y'],['p','via vendor'],['y'],['p','moves to Drive']],
-  ['Password + MFA sign-in',                  ['y'],['y'],['y'],['n','SSH keys'],['p','email PIN']],
-  ['Approval + time-limited access',          ['y','built'],['y','to build'],['p','custom'],['n'],['p','expiry only']],
-  ['Reliable 1 TB+ downloads',               ['y'],['p','download manager'],['y'],['y'],['p']],
-  ['No infrastructure to run',                ['p','light'],['y'],['y'],['y'],['y']],
-  ['One BAA / Google-native',                 ['y'],['y'],['n','2 BAAs'],['q','confirm'],['y','Workspace BAA']]
+const FIT = [
+  [`Data stays in your Google Cloud`, ['y'],['y'],['p','via vendor'],['y'],['p','moves to Drive']],
+  [`Password + MFA sign-in`, ['y'],['y'],['y'],['n','SSH keys'],['p','email PIN']],
+  [`Approval + time-limited access`, ['y','built'],['y','to build'],['p','custom'],['n'],['p','expiry only']],
+  [`Easy for doctors (browser)`, ['y'],['y'],['y'],['n','SFTP only'],['y']],
+  [`Very large (1 TB+) downloads`, ['y','SFTP option'],['p','download manager'],['y'],['y'],['p']],
+  [`No infrastructure to run`, ['p','light'],['y'],['y'],['y'],['y']],
+  [`One BAA / Google-native`, ['y'],['y'],['n','2 BAAs'],['q','confirm'],['y','Workspace BAA']]
 ];
 function renderOptions(){
-  document.getElementById('opts').innerHTML = OPTIONS.map(o=>`
-    <div class="card opt ${o.rec?'rec':''}">
-      <span class="badge ${o.tag[0]}" style="align-self:flex-start">${o.tag[1]}</span>
-      <h3>${o.name}</h3>
-      <div class="what">${o.what}</div>
-      <div class="lbl">Pros</div><ul>${o.pros.map(p=>`<li class="p">${p}</li>`).join('')}</ul>
-      <div class="lbl">Cons</div><ul>${o.cons.map(c=>`<li class="c">${c}</li>`).join('')}</ul>
-      <div class="verdict">${o.verdict}</div>
-    </div>`).join('');
-  const sym = {y:'✓',p:'◐',n:'✕',q:'?'};
-  const cell = (c,i)=>`<td class="${i===0?'recc':''}"><span class="${c[0]}">${sym[c[0]]}</span>${c[1]?`<span class="note">${c[1]}</span>`:''}</td>`;
-  document.getElementById('fit').innerHTML =
-    `<tr><th>Requirement</th>${OPTIONS.map((o,i)=>`<th class="${i===0?'recc':''}">${o.name}</th>`).join('')}</tr>` +
-    FIT_ROWS.map(r=>`<tr><td><b>${r[0]}</b></td>${r.slice(1).map(cell).join('')}</tr>`).join('');
+  document.getElementById('opts').innerHTML = OPTIONS.map(o=>`<div class="card opt ${o.rec?'rec':''}">
+    <span class="badge ${o.tag[0]}" style="align-self:flex-start">${o.tag[1]}</span><h3>${o.name}</h3><div class="what">${o.what}</div>
+    <div class="lbl">Pros</div><ul>${o.pros.map(p=>`<li class="p">${p}</li>`).join('')}</ul>
+    <div class="lbl">Cons</div><ul>${o.cons.map(c=>`<li class="c">${c}</li>`).join('')}</ul>
+    <div class="verdict">${o.verdict}</div></div>`).join('');
+  const sym={y:'✓',p:'◐',n:'✕',q:'?'};
+  document.getElementById('fit').innerHTML = `<tr><th>Requirement</th>${OPTIONS.map((o,i)=>`<th class="${i===0?'recc':''}">${o.name}</th>`).join('')}</tr>` +
+    FIT.map(r=>`<tr><td><b>${r[0]}</b></td>${r.slice(1).map((c,i)=>`<td class="${i===0?'recc':''}"><span class="${c[0]}">${sym[c[0]]}</span>${c[1]?`<span class="note">${c[1]}</span>`:''}</td>`).join('')}</tr>`).join('');
 }
 
-/* ---------------- Journey ---------------- */
-let chosenWindow = 7;
-const APPROVED_AT = Date.UTC(2026, 10, 18, 14, 0);
-const endDate = () => new Date(APPROVED_AT + chosenWindow*86400000).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'});
-const mail = o => `<div class="mock"><div class="mbar"><i></i><i></i><i></i><span class="url">✉ ${o.app}</span></div>
-  <div class="mail-h"><div class="subj">${o.subject}</div><div class="meta"><b>${o.from}</b> → ${o.to}${o.attach?` · 📎 ${o.attach}`:''}</div></div><div class="mbody">${o.body}</div></div>`;
-const browser = (url, body) => `<div class="mock"><div class="mbar"><i></i><i></i><i></i><span class="url">🔒 ${url}</span></div><div class="mbody">${body}</div></div>`;
+/* ---------------- Mockup helpers ---------------- */
+let win = 7;
+const BASE = Date.UTC(2026, 10, 18, 14, 0);
+const fmt = ms => new Date(ms).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'});
+const endDate = () => fmt(BASE + win*86400000);
+const frame = (url, body) => `<div class="frame"><div class="fbar"><i></i><i></i><i></i><div class="furl"><b>🔒</b> ${url}</div></div>${body}</div>`;
+const email = o => frame(o.app, `<div class="mail"><div class="mh"><div class="subj">${o.subject}</div>
+  <div class="from"><div class="av" style="background:${o.color||'#0f766e'}">${o.initial}</div><div><b style="color:#111827">${o.from}</b><br>to ${o.to}</div></div></div>
+  <div class="mb">${o.body}</div></div>`);
 const qr = () => { let h='<div class="qr">'; for(let r=0;r<21;r++){ for(let c=0;c<21;c++){ const f=(r<7&&c<7)||(r<7&&c>13)||(r>13&&c<7); const ring=f&&((r%14===0||r%14===6||c%14===0||c%14===6)||((r%14)>=2&&(r%14)<=4&&(c%14)>=2&&(c%14)<=4)); const on=f?ring:((r*7+c*13+r*c)%5<2); h+=`<span class="${on?'b':''}"></span>`; } } return h+'</div>'; };
+const adminShell = (title, inner) => frame('review.yourcompany.com'+title, `<div class="adm"><div class="ah"><b>Your Company · Video Access Console</b><span>🛡️ Signed in as reviewer@yourcompany.com (Google sign-in)</span></div><div class="ab">${inner}</div></div>`);
+const FILES = [['procedure-1001_part1.mp4','1.8 TB'],['procedure-1001_part2.mp4','1.6 TB'],['procedure-1001_part3.mp4','0.9 TB'],['procedure-1001_notes.pdf','2.4 MB']];
+let sub = 0;
 
+/* ---------------- Steps ---------------- */
 const STEPS = [
-  { title:`Hospital requests access`, who:['h','Hospital user'],
-    caption:`A doctor emails the client asking for a procedure recording, just as they do today.`,
-    screen:()=>mail({app:'Mail · New message', subject:'Request: procedure recording, Session 1001', from:'dr.lee@examplehospital.org', to:'video-requests@client.com',
-      body:`<p>Hello,</p><p style="margin-top:8px">Could you share the recording for <b>Session 1001</b>? I'm the treating surgeon.</p><p style="margin-top:8px">Thanks,<br>Dr. Lee, Example Hospital</p><div style="margin-top:14px"><button class="hot" onclick="next()">Send request</button></div>`}),
-    behind:[`Nothing is created or shared yet.`,`The videos stay in the client's archive, encrypted with the hospital's own key.`],
+  { who:['d','Doctor'], title:`Requests a video`, caption:`Dr. Lee emails your team asking for a procedure recording, the same way requests come in today.`,
+    screen:()=>email({app:'mail.riversidehospital.org', subject:'Request: procedure recording, Procedure 1001', from:'Dr. Sam Lee, Riverside Hospital', to:'video-requests@yourcompany.com', initial:'S', color:'#7c3aed',
+      body:`<p>Hello,</p><p style="margin-top:10px">Could you please share the recording of <b>Procedure 1001</b> from last Tuesday? I'm the treating surgeon and need it for a case review.</p><p style="margin-top:10px">Thank you,<br>Dr. Sam Lee<br><span class="small">Riverside Hospital</span></p>
+      <p style="margin-top:16px"><button class="cta pulse" onclick="next()">Send</button></p>`}),
+    behind:[`Nothing is created or shared yet.`,`The recordings stay in your video archive, encrypted and not reachable from outside.`],
     parts:['Cloud Storage','Cloud HSM'] },
-  { title:`Client logs it & sends an invite`, who:['t','Client team'],
-    caption:`A reviewer signs in with their company account, logs the request, and sends a secure invite.`,
-    screen:()=>browser('review.client.com', `
-      <div class="field"><span>Requester</span><b>dr.lee@examplehospital.org</b></div>
-      <div class="field"><span>Hospital · files</span><b>Example Hospital · Session 1001</b></div>
-      <div class="toast bad" style="margin-top:4px">A request from <b>someone@gmail.com</b> would be rejected: not an approved domain.</div>
-      <div style="margin-top:12px"><button class="hot" onclick="next()">Log request &amp; send invite</button></div>`),
-    behind:[`Only approved staff can open the console (company sign-in + MFA).`,`A switched-off, read-only account is created for this request only.`,`An invite with a single-use, 48-hour link is emailed.`],
-    parts:['Identity-Aware Proxy','Cloud Run','SFTPGo','Email relay'] },
-  { title:`Hospital sets password + MFA`, who:['h','Hospital user'],
-    caption:`The doctor opens the link, creates a password, and connects an authenticator app.`,
-    screen:()=>browser('access.client.com/setup', `
-      <div style="display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start">
-        <div>${qr()}<div class="muted" style="font-size:11px;margin-top:6px;text-align:center">Scan with your app</div></div>
-        <div>
-          <div class="field"><span>New password</span><b>••••••••••••••••</b></div>
-          <div class="field"><span>6-digit code</span><b>482 913</b></div>
-          <button class="hot" onclick="next()">Complete setup</button>
-        </div></div>`),
-    behind:[`The page only accepts traffic from approved hospital networks.`,`The account stays switched off: nothing is downloadable yet.`,`The client team gets an email saying it's ready for review.`],
-    parts:['Cloud Armor','SFTPGo','Cloud SQL'] },
-  { title:`Client reviews & approves`, who:['t','Client team'],
-    caption:`The reviewer checks the details and picks how long access lasts.`,
-    screen:()=>browser('review.client.com/requests/REQ-4F2A', `
-      <div class="field"><span>Requester · MFA</span><b>dr.lee@examplehospital.org · <span style="color:var(--success)">verified</span></b></div>
-      <div class="field"><span>Set up from</span><b>Example Hospital network</b></div>
-      <div class="field"><span>Files</span><b>Session 1001 · 4 files · 4.3 TB</b></div>
-      <div class="muted" style="margin:10px 0 6px;font-size:13px">Access window</div>
-      <div class="seg" id="winSeg">${[3,7,14].map(d=>`<button class="${d===chosenWindow?'on':''}" onclick="pickWindow(${d})">${d} days</button>`).join('')}</div>
-      <div style="margin-top:14px"><button class="hot green" onclick="next()">✓ Approve</button><button class="ghost">Reject</button></div>`),
-    behind:[`Only now are the requested files copied into the user's private folder.`,`Each file is set to delete itself when the window ends.`,`The account is switched on until the same end date.`],
-    parts:['Cloud Run','Cloud Storage','Cloud HSM','SFTPGo'] },
-  { title:`Hospital gets "access approved"`, who:['h','Hospital user'],
-    caption:`A clear email: what's available, how long they have, and how to download.`,
-    screen:()=>mail({app:'Mail · Inbox', subject:`Access approved: available for ${chosenWindow} days`, from:'no-reply@client.com', to:'dr.lee@examplehospital.org', attach:'download-profile.duck',
-      body:`<p><b>You have ${chosenWindow} days to download your files, until ${endDate()}.</b> After that, access ends and the files are deleted.</p>
-      <p style="margin-top:10px">Large files: open the attached profile in Cyberduck (SFTP). Or download in your browser.</p>
-      <div style="margin-top:14px"><button class="hot" onclick="next()">Start download</button></div>`}),
-    behind:[`Sent only after everything is ready.`,`The email contains no patient information.`],
+
+  { who:['t','Your team'], title:`Logs it & sends an invite`, caption:`A reviewer signs in with their company account, adds the request, and sends Dr. Lee a secure invite.`,
+    screen:()=>adminShell('', `
+      <div class="pane"><h4>New request</h4>
+        <div class="row"><div class="fld"><small>Requester</small><b>sam.lee@riversidehospital.org</b></div><div class="fld"><small>Hospital</small><b>Riverside Hospital</b></div><div class="fld"><small>Recording</small><b>Procedure 1001</b></div></div>
+        <div class="toast bad">Example: a request from a personal address like name@gmail.com is blocked. Only approved hospital domains are accepted.</div>
+        <div style="margin-top:12px"><button class="btn pulse" onclick="next()">Log request &amp; send invite</button></div></div>
+      <div class="pane"><h4>Request queue</h4><table>
+        <tr><th>Request</th><th>Requester</th><th>Status</th><th></th></tr>
+        <tr><td><b>REQ-1042</b></td><td>sam.lee@riversidehospital.org</td><td><span class="st" style="background:#60a5fa">NEW</span></td><td style="color:#94a3b8">—</td></tr>
+        <tr><td><b>REQ-1038</b></td><td>a.patel@northbayhealth.org</td><td><span class="st" style="background:#34d399">APPROVED</span></td><td style="color:#94a3b8">until Nov 21</td></tr></table></div>`),
+    behind:[`Only your approved staff can open this console (company sign-in + MFA).`,`A download account is created for Dr. Lee, switched off and limited to this request.`,`An invite with a single-use link is emailed.`],
+    parts:['Identity-Aware Proxy','Cloud Run','SFTPGo'] },
+
+  { who:['d','Doctor'], title:`Receives the invite`, caption:`Dr. Lee gets a short, clear email with a secure setup link.`,
+    screen:()=>email({app:'mail.riversidehospital.org', subject:'Set up secure access for your video request', from:'Your Company Video Access', to:'sam.lee@riversidehospital.org', initial:'Y',
+      body:`<p>Hi Dr. Lee,</p><p style="margin-top:10px">We received your request for <b>Procedure 1001</b>. To keep patient information safe, please set up your secure access:</p>
+      <p style="margin-top:14px"><button class="cta pulse" onclick="next()">Set up secure access</button></p>
+      <p class="small" style="margin-top:12px">This link works once and expires in 48 hours. After setup, our team will review your request and email you when the video is ready.</p>`}),
+    behind:[`The link is single-use and expires in 48 hours.`,`The email contains no patient information.`],
     parts:['Email relay'] },
-  { title:`Hospital downloads`, who:['h','Hospital user'],
-    caption:`A multi-terabyte download. If the connection drops, it picks up where it left off.`,
-    screen:()=>`<div class="mock"><div class="mbar"><i></i><i></i><i></i><span class="url">Cyberduck · sftp.client.com</span></div><div class="mbody">
-      <div class="field"><span>Signed in with</span><b>password + 6-digit code ✓</b></div>
-      <div style="display:flex;justify-content:space-between;font-size:13px;margin:12px 0 6px"><b>session-1001_part1.mp4 · 1.8 TB</b><span id="dlPct">0%</span></div>
-      <div class="prog"><div id="dlBar"></div></div>
-      <div id="dlStatus" class="toast info">Downloading…</div>
-      <div style="margin-top:14px"><button class="ghost" onclick="startDownload()">↻ Replay</button> <button class="hot" onclick="next()">Next</button></div></div></div>`,
-    onEnter:()=>startDownload(),
-    behind:[`Password + code are required on every sign-in.`,`The user sees only their approved files, read-only.`,`Drops resume from the exact byte where they stopped.`,`Every download is logged with who, what and from where.`],
-    parts:['Cloud Armor','SFTPGo','Cloud Storage','Audit logs'] },
-  { title:`Access ends automatically`, who:['s','Automatic'],
-    caption:`When the window closes, sign-in stops and the copies are deleted. No clean-up needed.`,
-    screen:()=>browser('review.client.com/requests/REQ-4F2A', `
-      <div class="field"><span>Status</span><b>Expired ${endDate()}</b></div>
-      <div class="field"><span>Private folder</span><b>0 files (deleted automatically)</b></div>
-      <div class="field"><span>History</span><b>request · invite · setup · approval · downloads · expiry</b></div>
-      <div class="toast ok">Full history kept for 6 years in the audit trail.</div>
-      <div style="margin-top:14px"><button class="hot" onclick="goTab('next')">See next steps →</button></div>`),
-    behind:[`The account's end date blocks sign-in.`,`Storage deletes the files on schedule, with a backup rule as a safety net.`,`The client can also revoke any time, or switch off a hospital's key instantly.`],
-    parts:['SFTPGo','Cloud Storage','Audit logs'] }
+
+  { who:['d','Doctor'], title:`Sets password + MFA`, caption:`On the secure setup page, Dr. Lee creates a password and connects an authenticator app.`,
+    screen:()=>frame('access.yourcompany.com/setup', `<div class="ext"><div class="top"><div class="lg">✚</div>Your Company · Secure Video Access</div>
+      <div class="box">${sub===0?`
+        <h3>Set up your secure access</h3><div class="meta">For sam.lee@riversidehospital.org · Procedure 1001</div>
+        <div class="step"><div class="sn">1</div><div><b>Scan with your authenticator app</b><div style="display:flex;gap:14px;align-items:center;margin-top:8px">${qr()}<span style="font-size:12.5px;color:#64748b">Google Authenticator, Microsoft Authenticator or similar</span></div></div></div>
+        <div class="step"><div class="sn">2</div><div><b>Create a password</b><label>At least 14 characters</label><input class="in" type="password" value="••••••••••••••••" readonly></div></div>
+        <div class="step"><div class="sn">3</div><div><b>Enter the 6-digit code from the app</b><input class="in" value="482 913" readonly style="letter-spacing:4px;font-weight:700"></div></div>
+        <button class="btn pulse" onclick="sub=1;render()">Complete setup</button>`:`
+        <div class="ok"><div style="font-size:30px">✅</div><b style="font-size:16px">You're all set</b><p style="margin-top:6px">Your request is with our team for review. We'll email you as soon as your video is ready to download.</p></div>
+        <button class="btn pulse" style="margin-top:14px" onclick="next()">Continue</button>`}
+      </div></div>`),
+    behind:[`The page only accepts traffic from approved hospital networks, behind Google Cloud Armor.`,`The account stays switched off: nothing can be downloaded yet.`,`Your team is notified that the request is ready for review.`],
+    parts:['Cloud Armor','SFTPGo','Cloud SQL'] },
+
+  { who:['t','Your team'], title:`Reviews & approves`, caption:`The reviewer sees everything on one screen, chooses how long access lasts, and approves.`,
+    screen:()=>adminShell('/requests/REQ-1042', sub===0?`
+      <div class="pane"><h4>Request REQ-1042 · ready for review</h4><div class="kv">
+        <span>Requester</span><b>sam.lee@riversidehospital.org</b>
+        <span>Received</span><b>Email, Nov 17 · logged by reviewer@yourcompany.com</b>
+        <span>Password + MFA</span><b style="color:#6ee7b7">Set up and verified</b>
+        <span>Set up from</span><b>Riverside Hospital network</b>
+        <span>Recording</span><b>Procedure 1001 · 4 files · 4.3 TB</b>
+        <span>Access</span><b>Download only · this request only</b></div>
+        <div style="margin:16px 0 8px;color:#94a3b8;font-size:12.5px">How long should access last?</div>
+        <div class="seg" id="winSeg">${[3,7,14].map(d=>`<button class="${d===win?'on':''}" onclick="pickWin(${d})">${d} days</button>`).join('')}</div>
+        <div style="margin-top:16px"><button class="btn g pulse" onclick="sub=1;render()">✓ Approve</button><button class="btn r">✕ Decline</button></div></div>`:`
+      <div class="pane"><h4>Approving REQ-1042…</h4>
+        <div class="check" id="c0"><span class="d">✓</span>Copying the 4 approved files into Dr. Lee's private folder</div>
+        <div class="check" id="c1"><span class="d">✓</span>Encrypting them with Riverside Hospital's own key</div>
+        <div class="check" id="c2"><span class="d">✓</span>Setting the files to delete automatically on ${endDate()}</div>
+        <div class="check" id="c3"><span class="d">✓</span>Switching on Dr. Lee's access until ${endDate()}</div>
+        <div class="check" id="c4"><span class="d">✓</span>Emailing Dr. Lee that the video is ready</div>
+        <div class="toast ok" id="cDone" style="opacity:0;transition:opacity .4s">Approved for ${win} days by reviewer@yourcompany.com. Recorded in the audit trail.</div>
+        <div style="margin-top:12px"><button class="btn pulse" onclick="next()">Continue</button></div></div>`),
+    onEnter:()=>{ if(sub===1) runChecks(); },
+    behind:[`Only now are the approved files copied into Dr. Lee's private folder.`,`Each file is set to delete itself when the window ends.`,`Access switches on until the same date, and the approver is recorded.`],
+    parts:['Cloud Run','Cloud Storage','Cloud HSM','SFTPGo'] },
+
+  { who:['d','Doctor'], title:`Gets "ready to download"`, caption:`Dr. Lee receives a clear email: what's ready, how long they have, and where to sign in.`,
+    screen:()=>email({app:'mail.riversidehospital.org', subject:`Your video is ready: available for ${win} days`, from:'Your Company Video Access', to:'sam.lee@riversidehospital.org', initial:'Y',
+      body:`<p>Hi Dr. Lee,</p><p style="margin-top:10px">Your request has been approved. <b>You can download your files until ${endDate()}.</b> After that, access ends and the files are removed.</p>
+      <p style="margin-top:14px"><button class="cta pulse" onclick="next()">Sign in to download</button></p>
+      <p class="small" style="margin-top:12px">Sign in with the password and authenticator app you set up. For very large files, your IT team can use the attached SFTP profile, which resumes automatically if interrupted.</p>
+      <div class="att">📎 secure-download-profile.duck</div>`}),
+    behind:[`Sent only after everything is ready.`,`No patient information in the email.`],
+    parts:['Email relay'] },
+
+  { who:['d','Doctor'], title:`Signs in`, caption:`Dr. Lee signs in to the download site with their password, then the 6-digit code.`,
+    screen:()=>frame('files.yourcompany.com/web/client/login', `<div class="sgl"><div class="bx">${sub===0?`
+        <div class="lt"><i></i>WebClient</div><div style="color:#6b7280;font-size:13px">Sign in to access your files</div>
+        <label>Username</label><input class="in" value="sam.lee@riversidehospital.org" readonly>
+        <label>Password</label><input class="in" type="password" value="••••••••••••••••" readonly>
+        <button class="btn pulse" onclick="sub=1;render()">Sign in</button>`:`
+        <div class="lt"><i></i>Two-factor authentication</div><div style="color:#6b7280;font-size:13px">Enter the 6-digit code from your authenticator app</div>
+        <label>Authentication code</label><input class="in" value="771 204" readonly style="letter-spacing:4px;font-weight:700">
+        <button class="btn pulse" onclick="next()">Verify</button>`}
+      </div></div>`),
+    behind:[`Password + code are required every time.`,`Sign-in only works from Riverside Hospital's network, and only until the end date.`,`Every sign-in is recorded.`],
+    parts:['Cloud Armor','SFTPGo','Cloud SQL'] },
+
+  { who:['d','Doctor'], title:`Downloads the files`, caption:`Dr. Lee sees only the approved files and downloads them in the browser.`,
+    screen:()=>frame('files.yourcompany.com/web/client/files', `<div class="sg"><div class="sg-side"><div class="sg-logo"><i></i>WebClient</div>
+        <div class="sg-nav"><div class="on">📁 Files</div><div>🔗 Shares</div><div>🛡️ 2FA</div></div></div>
+      <div class="sg-main"><div class="sg-topr">☀ 👤</div><div class="sg-card">
+        <div class="sg-search">🔍 Search</div><div class="sg-crumb">🏠 Home</div>
+        <table><tr><th>Name</th><th>Size</th><th>Last modified</th><th></th></tr>
+        ${FILES.map((f,i)=>`<tr><td><span class="fi"></span>${f[0]}</td><td>${f[1]}</td><td>11/18/2026, 2:05 PM</td><td><button class="act ${i===0?'hl pulse':''}" ${i===0?'onclick="startDl()"':''} title="Download">⬇</button></td></tr>`).join('')}
+        </table>
+        <div class="sg-foot"><span>Showing 1 to 4 of 4 records</span><span class="sg-page">1</span></div></div></div></div>
+      <div class="dlbar" id="dlbar" style="display:none">⬇ <span id="dlName">procedure-1001_part1.mp4</span><div class="pg"><div id="dlPg"></div></div><span id="dlTxt">0%</span></div>`)
+      + `<div style="margin-top:12px"><button class="nb primary" onclick="next()">Next: access ends →</button></div>`,
+    behind:[`Dr. Lee sees only this request's files, read-only.`,`Files stream directly from your Cloud Storage, encrypted with the hospital's key.`,`Every download is recorded: who, what, and from where.`,`For very large files, the SFTP option resumes if the connection drops.`],
+    parts:['SFTPGo','Cloud Storage','Cloud HSM','Audit trail'] },
+
+  { who:['s','Automatic'], title:`Access ends`, caption:`When the window closes, sign-in stops and the files are removed. Nobody has to remember to clean up.`,
+    screen:()=>frame('files.yourcompany.com/web/client/login', `<div class="sgl"><div class="bx">
+        <div class="lt"><i></i>WebClient</div>
+        <label>Username</label><input class="in" value="sam.lee@riversidehospital.org" readonly>
+        <label>Password</label><input class="in" type="password" value="••••••••••••••••" readonly>
+        <div class="err">Your access to these files ended on ${endDate()}. Please contact the sender if you need it again.</div>
+      </div></div>`)
+      + adminShell('/requests/REQ-1042', `<div class="pane" style="margin:0"><h4>REQ-1042 · expired</h4><div class="kv">
+        <span>Access ended</span><b>${endDate()}</b><span>Private folder</span><b>Empty, files deleted automatically</b>
+        <span>History</span><b>Request · invite · setup · approval · downloads · expiry</b><span>Retained</span><b>6 years in the audit trail</b></div></div>`),
+    behind:[`The account's end date blocks sign-in.`,`Storage deletes the files on schedule, with a backup rule as a safety net.`,`Your team can also revoke at any time, or switch off a hospital's key instantly.`],
+    parts:['SFTPGo','Cloud Storage','Audit trail'] }
 ];
 
 let cur = 0, timers = [];
 function clearTimers(){ timers.forEach(t=>{ clearInterval(t); clearTimeout(t); }); timers=[]; }
-function renderJourney(){
+function render(){
   clearTimers();
   const s = STEPS[cur];
-  document.getElementById('journey').innerHTML = `
-    <div class="steps">${STEPS.map((st,i)=>`
-      <button class="${i===cur?'on':''} ${i<cur?'done':''}" onclick="setStep(${i})">
-        <span class="num">${i<cur?'✓':i+1}</span><span><b>${st.title}</b><span class="who">${st.who[1]}</span></span>
-      </button>`).join('')}</div>
-    <div>
-      <span class="who-chip ${s.who[0]}">${s.who[1]}</span>
-      <div class="stitle">${cur+1}. ${s.title}</div>
-      <p class="muted">${s.caption}</p>
+  document.getElementById('stepper').innerHTML = STEPS.map((st,i)=>`<button class="${i===cur?'on':''} ${i<cur?'done':''}" onclick="go(${i})">
+    <span class="top"><span>${i<cur?'✓':i+1}</span><span>${st.who[0]==='d'?'🩺':st.who[0]==='t'?'🧑‍💼':'⏳'}</span></span><b>${st.title}</b></button>`).join('');
+  document.getElementById('walk').innerHTML = `<div>
+      <span class="who ${s.who[0]}">${s.who[0]==='d'?'🩺':s.who[0]==='t'?'🧑‍💼':'⏳'} ${s.who[1]}</span>
+      <div class="stitle">${cur+1}. ${s.title}</div><p class="muted">${s.caption}</p>
       ${s.screen()}
-      <div class="navbtns">
-        <button class="nb" onclick="prev()" ${cur===0?'disabled style="opacity:.4"':''}>← Back</button>
-        <button class="nb primary" onclick="next()">${cur===STEPS.length-1?'Next steps →':'Next →'}</button>
-      </div>
+      <div class="navbtns"><button class="nb" onclick="prev()" ${cur===0&&sub===0?'disabled style="opacity:.4"':''}>← Back</button>
+        <button class="nb primary" onclick="next()">${cur===STEPS.length-1?'How it works →':'Next →'}</button></div>
     </div>
-    <div class="card behind">
-      <h4>Behind the scenes</h4>
-      <ol>${s.behind.map(b=>`<li>${b}</li>`).join('')}</ol>
-      <div class="chips">${s.parts.map(p=>`<span class="chip">${p}</span>`).join('')}</div>
-    </div>`;
+    <div class="card side"><h4>What's happening</h4><ol>${s.behind.map(b=>`<li>${b}</li>`).join('')}</ol>
+      <div class="chips">${s.parts.map(p=>`<span class="chip">${p}</span>`).join('')}</div></div>`;
   if(s.onEnter) s.onEnter();
 }
-function setStep(i){ cur=i; renderJourney(); }
-function next(){ if(cur<STEPS.length-1){ cur++; renderJourney(); } else { goTab('next'); } }
-function prev(){ if(cur>0){ cur--; renderJourney(); } }
-function pickWindow(d){ chosenWindow=d; document.querySelectorAll('#winSeg button').forEach(b=>b.classList.toggle('on', b.textContent.startsWith(d+' '))); }
-function startDownload(){
+function go(i){ cur=i; sub=0; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+function next(){ if(cur<STEPS.length-1){ go(cur+1); } else { goTab('how'); } }
+function prev(){ if(sub>0){ sub=0; render(); } else if(cur>0){ go(cur-1); } }
+function pickWin(d){ win=d; document.querySelectorAll('#winSeg button').forEach(b=>b.classList.toggle('on', b.textContent.startsWith(d+' '))); }
+function runChecks(){
+  for(let i=0;i<5;i++) timers.push(setTimeout(()=>{ const el=document.getElementById('c'+i); if(el) el.classList.add('done'); }, 400+i*600));
+  timers.push(setTimeout(()=>{ const d=document.getElementById('cDone'); if(d) d.style.opacity=1; }, 400+5*600));
+}
+function startDl(){
   clearTimers();
-  const bar=document.getElementById('dlBar'), pct=document.getElementById('dlPct'), st=document.getElementById('dlStatus');
-  if(!bar) return;
-  let p=0, phase=0; bar.style.width='0%'; st.className='toast info'; st.textContent='Downloading…';
-  const t=setInterval(()=>{
-    if(phase===0){ p+=3; if(p>=60){ p=60; phase=1; st.className='toast bad'; st.textContent='Connection lost at 60%. Reconnecting…';
-      timers.push(setTimeout(()=>{ phase=2; st.className='toast info'; st.textContent='Resumed from where it stopped. Nothing downloaded twice.'; },1600)); } }
-    else if(phase===2){ p+=2; if(p>=100){ p=100; phase=3; st.className='toast ok'; st.textContent='Download complete.'; clearInterval(t); } }
-    bar.style.width=p+'%'; pct.textContent=p+'%';
-  },120);
+  const bar=document.getElementById('dlbar'), pg=document.getElementById('dlPg'), tx=document.getElementById('dlTxt');
+  if(!bar) return; bar.style.display='flex'; let p=0;
+  const t=setInterval(()=>{ p+=4; if(p>=100){ p=100; clearInterval(t); tx.textContent='Done ✓'; } else tx.textContent=p+'%'; pg.style.width=p+'%'; },110);
   timers.push(t);
 }
 
-/* ---------------- Tabs & controls ---------------- */
-let currentTab = 'problem';
+/* ---------------- Tabs ---------------- */
+let currentTab='challenge';
 function renderTabs(){ document.getElementById('tabs').innerHTML = TABS.map(([id,l],i)=>`<button class="${id===currentTab?'on':''}" onclick="goTab('${id}')"><span class="k">${i+1}</span>${l}</button>`).join(''); }
-function goTab(id){
-  clearTimers(); currentTab=id;
-  document.querySelectorAll('.tab').forEach(s=>s.classList.toggle('on', s.id==='tab-'+id));
-  renderTabs();
-  if(id==='solution') renderJourney();
-  window.scrollTo({top:0});
-}
-function toggleTheme(){ const r=document.documentElement; r.dataset.theme = r.dataset.theme==='dark'?'light':'dark'; }
+function goTab(id){ clearTimers(); currentTab=id; document.querySelectorAll('.tab').forEach(s=>s.classList.toggle('on', s.id==='tab-'+id)); renderTabs(); if(id==='walk') render(); window.scrollTo({top:0}); }
+function toggleTheme(){ const r=document.documentElement; r.dataset.theme=r.dataset.theme==='dark'?'light':'dark'; }
 document.addEventListener('keydown', e=>{
   if(e.target.matches('input,textarea,select')) return;
   const n=parseInt(e.key,10);
   if(n>=1 && n<=TABS.length){ goTab(TABS[n-1][0]); return; }
-  if(currentTab==='solution' && e.key==='ArrowRight'){ e.preventDefault(); next(); }
-  else if(currentTab==='solution' && e.key==='ArrowLeft'){ e.preventDefault(); prev(); }
+  if(currentTab==='walk' && e.key==='ArrowRight'){ e.preventDefault(); next(); }
+  else if(currentTab==='walk' && e.key==='ArrowLeft'){ e.preventDefault(); prev(); }
   else if(e.key==='t'||e.key==='T') toggleTheme();
 });
-renderOptions(); renderJourney(); goTab('problem');
+renderOptions(); render(); goTab('challenge');
 </script>
 </body>
 </html>
