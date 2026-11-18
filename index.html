@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Secure Video Access for Hospitals — Solution Walkthrough</title>
+<style>
+  :root, [data-theme="dark"] {
+    --bg:#070b14; --bg2:#0b1220; --card:#0f172a; --card2:#151f36; --border:#23314f;
+    --text:#e8eef9; --muted:#8e9bb4; --primary:#4f9cff; --primary2:#8b6cff;
+    --success:#2fd18b; --warn:#f5b84b; --danger:#ff6b6b; --teal:#2dd4bf; --violet:#a78bfa;
+    --shadow:0 16px 40px rgba(0,0,0,.35); --glow:color-mix(in srgb, var(--primary) 40%, transparent);
+  }
+  [data-theme="light"] {
+    --bg:#f5f7fb; --bg2:#ffffff; --card:#ffffff; --card2:#f1f4fa; --border:#dbe2ee;
+    --text:#0f172a; --muted:#5a6780; --primary:#2563eb; --primary2:#6d4aff;
+    --success:#0f9f6e; --warn:#b7791f; --danger:#dc2626; --teal:#0d9488; --violet:#7c3aed;
+    --shadow:0 12px 28px rgba(15,23,42,.08); --glow:color-mix(in srgb, var(--primary) 25%, transparent);
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif; background:var(--bg); color:var(--text); font-size:14px; line-height:1.55; -webkit-font-smoothing:antialiased; }
+  body::before { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background:radial-gradient(900px 480px at 90% -10%, rgba(79,156,255,.14), transparent 60%), radial-gradient(700px 420px at -10% 40%, rgba(139,108,255,.08), transparent 60%); }
+  h1,h2,h3,h4,p { margin:0; }
+  code, .mono { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+  code { font-size:12px; background:var(--card2); border:1px solid var(--border); border-radius:5px; padding:1px 6px; }
+  button { font-family:inherit; cursor:pointer; }
+
+  /* ---------- Header ---------- */
+  header { position:sticky; top:0; z-index:40; background:color-mix(in srgb, var(--bg) 85%, transparent); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); }
+  .hdr { max-width:1360px; margin:0 auto; display:flex; align-items:center; gap:16px; padding:10px 24px; }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:800; font-size:13.5px; white-space:nowrap; }
+  .logo { width:30px; height:30px; border-radius:9px; display:grid; place-items:center; color:#fff; background:linear-gradient(135deg,var(--primary),var(--primary2)); }
+  nav.tabs { display:flex; gap:4px; flex:1; overflow-x:auto; scrollbar-width:none; }
+  nav.tabs button { border:1px solid transparent; background:transparent; color:var(--muted); font-weight:650; font-size:13px; padding:8px 12px; border-radius:8px; white-space:nowrap; }
+  nav.tabs button:hover { color:var(--text); background:var(--card2); }
+  nav.tabs button.on { color:var(--text); background:var(--card2); border-color:var(--border); box-shadow:inset 0 -2px 0 var(--primary); }
+  nav.tabs button .k { font-size:10.5px; color:var(--muted); margin-right:6px; font-family:ui-monospace,Menlo,monospace; }
+  .tools { display:flex; gap:6px; }
+  .tool { border:1px solid var(--border); background:var(--card2); color:var(--text); font-size:12.5px; font-weight:600; padding:7px 10px; border-radius:8px; }
+  .tool:hover { border-color:var(--primary); }
+
+  main { max-width:1360px; margin:0 auto; padding:28px 24px 70px; }
+  .tab { display:none; animation:fade .3s ease; }
+  .tab.on { display:block; }
+  @keyframes fade { from { opacity:0; transform:translateY(4px);} to { opacity:1; transform:none; } }
+
+  .eyebrow { font-size:11.5px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:var(--primary); margin-bottom:8px; }
+  .title { font-size:28px; font-weight:820; letter-spacing:-.02em; margin-bottom:8px; }
+  .lead { font-size:15.5px; color:var(--muted); max-width:900px; }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px; box-shadow:var(--shadow); }
+  .sub { background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:16px; }
+  .grid { display:grid; gap:16px; }
+  .g2 { grid-template-columns:repeat(2,minmax(0,1fr)); } .g3 { grid-template-columns:repeat(3,minmax(0,1fr)); } .g4 { grid-template-columns:repeat(4,minmax(0,1fr)); }
+  @media (max-width:1050px){ .g3,.g4 { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  @media (max-width:680px){ .g2,.g3,.g4 { grid-template-columns:1fr; } }
+  .muted { color:var(--muted); }
+  .chip { display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:999px; border:1px solid var(--border); background:var(--card2); color:var(--muted); }
+  .chip.blue { color:var(--primary); border-color:color-mix(in srgb,var(--primary) 40%,transparent); background:color-mix(in srgb,var(--primary) 10%,transparent); }
+  .chip.green { color:var(--success); border-color:color-mix(in srgb,var(--success) 40%,transparent); background:color-mix(in srgb,var(--success) 10%,transparent); }
+  .chip.amber { color:var(--warn); border-color:color-mix(in srgb,var(--warn) 40%,transparent); background:color-mix(in srgb,var(--warn) 10%,transparent); }
+  .chip.violet { color:var(--violet); border-color:color-mix(in srgb,var(--violet) 40%,transparent); background:color-mix(in srgb,var(--violet) 10%,transparent); }
+  ul.list { margin:0; padding:0; list-style:none; }
+  ul.list li { position:relative; padding:5px 0 5px 22px; }
+  ul.list li::before { content:"✓"; position:absolute; left:2px; color:var(--success); font-weight:800; }
+
+  /* ---------- Overview ---------- */
+  .hero h1 { font-size:42px; line-height:1.1; font-weight:860; letter-spacing:-.025em; max-width:1000px; margin:10px 0 14px; }
+  .grad { background:linear-gradient(90deg,var(--primary),var(--primary2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .pain .ico, .outcome .ico { width:38px; height:38px; border-radius:10px; display:grid; place-items:center; font-size:18px; background:var(--card2); border:1px solid var(--border); margin-bottom:10px; }
+  .pain h3, .outcome h3 { font-size:15px; margin-bottom:6px; }
+  .glance { display:grid; grid-template-columns:120px repeat(6,minmax(0,1fr)); gap:10px; align-items:stretch; }
+  .lane-label { display:flex; align-items:center; font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); }
+  .gstep { background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:12px; text-align:left; color:var(--text); transition:all .15s; }
+  .gstep:hover { border-color:var(--primary); transform:translateY(-2px); }
+  .gstep .n { font-size:11px; font-weight:800; color:var(--primary); }
+  .gstep b { display:block; font-size:13px; margin:4px 0 2px; }
+  .gstep span { font-size:12px; color:var(--muted); }
+  .gempty { border:1px dashed var(--border); border-radius:12px; opacity:.35; }
+  @media (max-width:1050px){ .glance { grid-template-columns:1fr; } .gempty { display:none; } .lane-label { margin-top:8px; } }
+
+  /* ---------- Journey ---------- */
+  .jhead { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-end; gap:14px; margin-bottom:18px; }
+  .journey { display:grid; grid-template-columns:230px minmax(0,1.12fr) minmax(0,1fr); gap:16px; align-items:start; }
+  @media (max-width:1180px){ .journey { grid-template-columns:1fr; } .steps { flex-direction:row !important; overflow-x:auto; } .steps button { min-width:170px; } }
+  .steps { display:flex; flex-direction:column; gap:6px; position:sticky; top:72px; }
+  .steps button { display:flex; gap:10px; align-items:flex-start; text-align:left; background:var(--card); border:1px solid var(--border); color:var(--text); border-radius:11px; padding:10px; }
+  .steps button:hover { border-color:var(--primary); }
+  .steps .num { flex:none; width:24px; height:24px; border-radius:50%; display:grid; place-items:center; font-size:11.5px; font-weight:800; background:var(--card2); border:1px solid var(--border); }
+  .steps .lbl b { display:block; font-size:12.5px; line-height:1.3; }
+  .steps .lbl span { font-size:11px; color:var(--muted); }
+  .steps button.done .num { background:color-mix(in srgb,var(--success) 18%,transparent); border-color:var(--success); color:var(--success); }
+  .steps button.on { border-color:var(--primary); box-shadow:0 0 0 1px var(--primary), 0 10px 22px var(--glow); }
+  .steps button.on .num { background:var(--primary); border-color:var(--primary); color:#fff; }
+  .screen-head { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; }
+  .screen-head h3 { font-size:18px; }
+  .navbtns { display:flex; justify-content:space-between; margin-top:12px; gap:8px; }
+  .nb { border:1px solid var(--border); background:var(--card2); color:var(--text); font-weight:650; font-size:12.5px; padding:8px 14px; border-radius:8px; }
+  .nb:hover { border-color:var(--primary); }
+  .nb.primary { background:linear-gradient(135deg,var(--primary),var(--primary2)); color:#fff; border-color:transparent; }
+  .caption { font-size:13px; color:var(--muted); margin-bottom:10px; }
+
+  /* mock screens */
+  .mock { border:1px solid var(--border); border-radius:14px; overflow:hidden; background:var(--bg2); box-shadow:var(--shadow); }
+  .mbar { display:flex; align-items:center; gap:6px; padding:9px 12px; background:var(--card2); border-bottom:1px solid var(--border); }
+  .mbar i { width:10px; height:10px; border-radius:50%; background:#ff5f57; } .mbar i:nth-child(2){ background:#febc2e; } .mbar i:nth-child(3){ background:#28c840; }
+  .mbar .url { margin-left:10px; flex:1; background:var(--bg); border:1px solid var(--border); border-radius:7px; padding:4px 10px; font-size:11.5px; color:var(--muted); font-family:ui-monospace,Menlo,monospace; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .mbody { padding:18px; font-size:13px; }
+  .mail-h { padding:16px 18px 12px; border-bottom:1px solid var(--border); }
+  .mail-h .subj { font-size:16px; font-weight:750; margin-bottom:4px; }
+  .mail-h .meta { font-size:12px; color:var(--muted); }
+  .att { display:inline-flex; gap:6px; margin-top:8px; font-size:12px; padding:5px 10px; border:1px solid var(--border); border-radius:8px; background:var(--card2); }
+  .field { display:flex; justify-content:space-between; gap:12px; padding:8px 12px; border:1px solid var(--border); border-radius:8px; background:var(--card); margin-bottom:8px; font-size:12.5px; }
+  .field span:first-child { color:var(--muted); }
+  .input { width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:8px; background:var(--card); color:var(--text); font-size:13px; margin:4px 0 10px; font-family:inherit; }
+  .hot { border:none; background:linear-gradient(135deg,var(--primary),var(--primary2)); color:#fff; font-weight:700; font-size:13px; padding:10px 16px; border-radius:9px; margin-right:6px; animation:pulse 2s infinite; }
+  .hot.green { background:var(--success); color:#03220f; } .hot.red { background:var(--danger); }
+  .ghost { border:1px solid var(--border); background:var(--card2); color:var(--text); font-weight:650; font-size:13px; padding:9px 14px; border-radius:9px; margin-right:6px; }
+  @keyframes pulse { 0%,100% { box-shadow:0 0 0 0 var(--glow);} 50% { box-shadow:0 0 0 7px transparent; } }
+  .toast { padding:9px 12px; border-radius:9px; font-size:12.5px; font-weight:650; margin-top:10px; }
+  .toast.ok { color:var(--success); background:color-mix(in srgb,var(--success) 12%,transparent); border:1px solid color-mix(in srgb,var(--success) 35%,transparent); }
+  .toast.bad { color:var(--danger); background:color-mix(in srgb,var(--danger) 12%,transparent); border:1px solid color-mix(in srgb,var(--danger) 35%,transparent); }
+  .toast.info { color:var(--primary); background:color-mix(in srgb,var(--primary) 10%,transparent); border:1px solid color-mix(in srgb,var(--primary) 35%,transparent); }
+  .term { background:#05080f; color:#d2e3ff; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; line-height:1.65; padding:16px; white-space:pre-wrap; }
+  .term .g { color:#4ade80; } .term .y { color:#fbbf24; } .term .r { color:#f87171; } .term .m { color:#7d8aa5; }
+  .qr { display:grid; grid-template-columns:repeat(21,6px); gap:0; padding:8px; background:#fff; border-radius:6px; width:max-content; }
+  .qr span { width:6px; height:6px; } .qr span.b { background:#0f172a; }
+  .seg { display:inline-flex; border:1px solid var(--border); border-radius:9px; overflow:hidden; }
+  .seg button { border:none; background:var(--card); color:var(--muted); padding:8px 14px; font-weight:700; font-size:12.5px; border-right:1px solid var(--border); }
+  .seg button:last-child { border-right:none; }
+  .seg button.on { background:var(--primary); color:#fff; }
+  .prog { height:10px; border-radius:6px; background:var(--card2); border:1px solid var(--border); overflow:hidden; }
+  .prog div { height:100%; width:0; background:linear-gradient(90deg,var(--primary),var(--primary2)); transition:width .25s linear; }
+  .check { display:flex; gap:10px; align-items:center; padding:8px 0; border-bottom:1px dashed var(--border); color:var(--muted); font-size:13px; transition:color .3s; }
+  .check .dot { width:20px; height:20px; border-radius:50%; border:2px solid var(--border); display:grid; place-items:center; font-size:11px; flex:none; transition:all .3s; }
+  .check.done { color:var(--text); } .check.done .dot { background:var(--success); border-color:var(--success); color:#03220f; }
+  table.t { width:100%; border-collapse:collapse; font-size:12.5px; }
+  table.t th, table.t td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--border); vertical-align:top; }
+  table.t th { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.05em; background:var(--card2); }
+  .badge { display:inline-block; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:999px; color:#0b1220; }
+
+  /* under the hood */
+  .hood { position:sticky; top:72px; }
+  .hood h4 { font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:16px 0 8px; }
+  .hood h4:first-child { margin-top:0; }
+  .map { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; }
+  .map .col-h { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); padding:0 2px 2px; }
+  .tile { border:1px solid var(--border); border-radius:9px; padding:7px 8px; background:var(--card2); opacity:.3; transition:all .3s; min-height:50px; }
+  .tile b { display:block; font-size:11.5px; line-height:1.25; }
+  .tile span { font-size:10.5px; color:var(--muted); }
+  .tile.on { opacity:1; border-color:var(--primary); box-shadow:0 0 0 1px var(--primary), 0 6px 16px var(--glow); }
+  .tile.g-entry { border-left:3px solid var(--violet); } .tile.g-app { border-left:3px solid var(--primary); } .tile.g-data { border-left:3px solid var(--teal); } .tile.g-evidence { border-left:3px solid var(--warn); }
+  ol.behind { margin:0; padding-left:20px; }
+  ol.behind li { padding:4px 0; font-size:13px; }
+  ol.behind li b { color:var(--text); }
+
+  /* SFTPGo / compare */
+  .flow { display:flex; align-items:stretch; gap:10px; flex-wrap:wrap; }
+  .fbox { flex:1; min-width:150px; background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:14px; }
+  .fbox b { display:block; font-size:13.5px; margin-bottom:4px; }
+  .fbox span { font-size:12px; color:var(--muted); }
+  .farrow { display:grid; place-items:center; color:var(--muted); font-size:20px; }
+  .rate { font-weight:900; margin-right:6px; } .rate.good { color:var(--success); } .rate.partial { color:var(--warn); } .rate.gap { color:var(--danger); }
+  .in-row { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:5px 0; font-size:12.5px; }
+  .in-row label { color:var(--muted); }
+  .in-row input { width:96px; background:var(--bg2); color:var(--text); border:1px solid var(--border); border-radius:7px; padding:6px 8px; font-family:ui-monospace,Menlo,monospace; text-align:right; }
+  input[type=range] { width:100%; accent-color:var(--primary); }
+  .big { font-size:30px; font-weight:860; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; margin:4px 0; }
+  .stack { display:flex; height:28px; border-radius:8px; overflow:hidden; border:1px solid var(--border); background:var(--bg2); }
+  .stack div { height:100%; transition:width .35s; }
+  .sw { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:-1px; }
+  details summary { cursor:pointer; font-weight:700; }
+  .phase .wk { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.07em; }
+  .ttv-bar { height:30px; border-radius:8px; display:flex; align-items:center; padding:0 12px; font-size:12px; font-weight:750; color:#fff; }
+  footer { max-width:1360px; margin:0 auto; padding:20px 24px 40px; color:var(--muted); font-size:12px; border-top:1px solid var(--border); display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+  .kbd { font-family:ui-monospace,Menlo,monospace; font-size:11px; border:1px solid var(--border); border-bottom-width:2px; border-radius:5px; padding:0 5px; background:var(--card2); }
+
+  /* technical architecture */
+  .arch-wrap { display:grid; grid-template-columns:minmax(0,1fr) 330px; gap:16px; align-items:start; }
+  @media (max-width:1180px){ .arch-wrap { grid-template-columns:1fr; } }
+  .az { fill:var(--card); opacity:.55; stroke:var(--border); stroke-dasharray:4 4; }
+  .azl { font-size:10.5px; font-weight:800; fill:var(--muted); letter-spacing:.08em; }
+  .an { cursor:pointer; transition:opacity .25s; }
+  .an.dim { opacity:.22; }
+  .an .bx { fill:var(--card2); stroke:var(--border); stroke-width:1.2; transition:stroke .2s; }
+  .an:hover .bx { stroke:var(--primary); }
+  .an.sel .bx { stroke:var(--primary); stroke-width:2.2; filter:drop-shadow(0 0 8px var(--glow)); }
+  .ac-people { fill:#94a3b8; } .ac-entry { fill:var(--violet); } .ac-app { fill:var(--primary); } .ac-data { fill:var(--teal); } .ac-evidence { fill:var(--warn); }
+  .at { font-size:12.5px; font-weight:750; fill:var(--text); pointer-events:none; }
+  .as { font-size:10.5px; fill:var(--muted); pointer-events:none; }
+  .ae { fill:none; stroke:var(--muted); stroke-width:1.2; opacity:.45; transition:opacity .25s; }
+  .ae.dim { opacity:.08; }
+  .ae.on { stroke:var(--primary); stroke-width:2.2; opacity:1; stroke-dasharray:7 6; animation:aflow .9s linear infinite; }
+  @keyframes aflow { to { stroke-dashoffset:-13; } }
+  .al { font-size:10px; font-weight:700; fill:var(--text); paint-order:stroke; stroke:var(--bg2); stroke-width:4px; stroke-linejoin:round; pointer-events:none; }
+
+  @media print {
+    :root, [data-theme] { --bg:#fff; --bg2:#fff; --card:#fff; --card2:#f4f6fa; --border:#d8dee9; --text:#0f172a; --muted:#475569; --shadow:none; }
+    header, .navbtns, .tools { display:none !important; }
+    .tab { display:block !important; page-break-after:always; }
+    body::before { display:none; }
+    .hot { animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr">
+    <div class="brand"><div class="logo">⛨</div><span>Secure Video Access · Solution Walkthrough</span></div>
+    <nav class="tabs" id="tabs"></nav>
+    <div class="tools">
+      <button class="tool" onclick="toggleTheme()" title="Theme (T)">◐</button>
+      <button class="tool" onclick="toggleFull()" title="Full screen (F)">⛶</button>
+      <button class="tool" onclick="window.print()" title="Print / PDF">⎙</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- ================================================= OVERVIEW -->
+  <section class="tab" id="tab-overview">
+    <div class="hero">
+      <span class="chip blue">Google Cloud · HIPAA-aligned · Proof of concept</span>
+      <h1>Share surgical videos with hospitals <span class="grad">securely, only after approval, and only for as long as needed.</span></h1>
+      <p class="lead">A hospital asks for a recording. Your team approves it. The hospital user downloads it with strong sign-in, inside a time window you choose. Then access and files expire automatically. Patient data never leaves your Google Cloud environment, and every step is on the record.</p>
+    </div>
+
+    <div class="eyebrow" style="margin-top:34px">The problem</div>
+    <div class="grid g3">
+      <div class="card pain"><div class="ico">📦</div><h3>The files are very large</h3><p class="muted">A single procedure can be hundreds of gigabytes to several terabytes. Email links and plain browser downloads fail, and a dropped connection means starting over.</p></div>
+      <div class="card pain"><div class="ico">🏥</div><h3>The people are outside your company</h3><p class="muted">Hospital staff don't have accounts with you. They still need strong sign-in, and must only ever see the videos approved for them.</p></div>
+      <div class="card pain"><div class="ico">🛡️</div><h3>Every file is protected health information</h3><p class="muted">Each share needs a named approver, encryption, a hard end date, guaranteed deletion, and an audit trail kept for six years.</p></div>
+    </div>
+
+    <div class="card" style="margin-top:16px;border-color:color-mix(in srgb,var(--primary) 45%,var(--border))">
+      <div class="eyebrow">The solution in one sentence</div>
+      <p style="font-size:17px;font-weight:600;line-height:1.5">Your team logs each request and sends a secure invite. The hospital user sets a password and multi-factor sign-in. You approve with a download window, and only then are the requested videos placed in that user's private, read-only folder. Access and files expire on their own.</p>
+    </div>
+
+    <div class="eyebrow" style="margin-top:34px">The journey at a glance <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:600">· click any step to open it</span></div>
+    <div class="card">
+      <div class="glance" id="glance"></div>
+    </div>
+
+    <div class="eyebrow" style="margin-top:34px">What you get</div>
+    <div class="grid g4">
+      <div class="card outcome"><div class="ico">☁️</div><h3>Data stays in your cloud</h3><p class="muted">Videos go straight from your Google Cloud storage to the hospital. There's no third-party file service in between.</p></div>
+      <div class="card outcome"><div class="ico">✋</div><h3>Nothing is shared without approval</h3><p class="muted">Accounts start switched off. Files are copied only when a named reviewer approves.</p></div>
+      <div class="card outcome"><div class="ico">⏳</div><h3>Access ends on its own</h3><p class="muted">The reviewer picks 3, 7 or 14 days. When the window ends, sign-in stops and the files are deleted.</p></div>
+      <div class="card outcome"><div class="ico">📜</div><h3>Every action is on the record</h3><p class="muted">Requests, approvals, sign-ins and downloads, with network addresses, kept for six years.</p></div>
+    </div>
+  </section>
+
+  <!-- ================================================= HOSPITAL USER JOURNEY -->
+  <section class="tab" id="tab-user"></section>
+
+  <!-- ================================================= CLIENT TEAM JOURNEY -->
+  <section class="tab" id="tab-team"></section>
+
+  <!-- ================================================= TECHNICAL ARCHITECTURE -->
+  <section class="tab" id="tab-arch">
+    <div class="eyebrow">Technical architecture</div>
+    <div class="title">How the solution is built on Google Cloud</div>
+    <p class="lead">Two separate front doors: a <b>staff console behind Identity-Aware Proxy</b> and a <b>hospital-facing setup page and transfer server behind Cloud Armor and network allowlists</b>. All compute runs in a private VPC, data is encrypted with per-hospital Cloud HSM keys, and every component logs to one audit vault. Everything is deployed with Terraform.</p>
+
+    <div class="arch-wrap" style="margin-top:20px">
+      <div class="card" style="padding:14px">
+        <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px">
+          <span class="muted" style="font-size:12px;font-weight:700;margin-right:4px">Highlight a flow:</span>
+          <div class="seg" id="flowSeg"></div>
+        </div>
+        <svg id="archSvg" viewBox="0 0 1160 512" role="img" aria-label="Solution architecture diagram" style="width:100%;height:auto;display:block"></svg>
+        <div style="display:flex;flex-wrap:wrap;gap:14px;font-size:11.5px;color:var(--muted);padding:6px 4px 0">
+          <span><span class="sw" style="background:#94a3b8"></span>People</span>
+          <span><span class="sw" style="background:var(--violet)"></span>Front doors</span>
+          <span><span class="sw" style="background:var(--primary)"></span>Applications</span>
+          <span><span class="sw" style="background:var(--teal)"></span>Data &amp; keys</span>
+          <span><span class="sw" style="background:var(--warn)"></span>Evidence</span>
+          <span style="margin-left:auto">Click any component for details</span>
+        </div>
+      </div>
+      <div class="card hood" id="archDetail"></div>
+    </div>
+
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card">
+        <div class="eyebrow">Network &amp; traffic</div>
+        <table class="t">
+          <tr><th>Path</th><th>Protocol / port</th><th>Control</th></tr>
+          <tr><td>Staff → console</td><td>HTTPS 443</td><td>Identity-Aware Proxy (SSO + MFA, group membership); console verifies signed JWT</td></tr>
+          <tr><td>Hospital → setup page</td><td>HTTPS 443</td><td>Global HTTPS LB + Cloud Armor (OWASP rules, 60 req/min/IP, CIDR allowlist, default deny); TLS 1.2+ restricted policy</td></tr>
+          <tr><td>Hospital → transfer server</td><td>SFTP 22 · HTTPS 443 · WebDAV 8444</td><td>Regional network LB with source-range allowlist; client IP preserved; per-user IP allowlist in SFTPGo</td></tr>
+          <tr><td>Console → SFTPGo admin API</td><td>HTTP 8080 (private)</td><td>Cloud Run Direct VPC egress → internal LB <code>10.10.0.51</code>; firewall allows VPC ranges only</td></tr>
+          <tr><td>SFTPGo → database</td><td>PostgreSQL 5432 (TLS)</td><td>Private Service Connect endpoint <code>10.10.0.50</code>; no public IP, no VPC peering</td></tr>
+          <tr><td>SFTPGo → Cloud Storage</td><td>Google APIs</td><td>Private Google Access; Workload Identity (no keys)</td></tr>
+          <tr><td>Outbound email</td><td>SMTP 587 (STARTTLS)</td><td>Relay host and credentials from Secret Manager; GKE egress via Cloud NAT</td></tr>
+        </table>
+        <p class="muted" style="font-size:12px;margin-top:8px">VPC subnet <code>10.10.0.0/20</code> · pods <code>10.20.0.0/16</code> · services <code>10.30.0.0/20</code> · GKE nodes have private IPs only.</p>
+      </div>
+
+      <div class="card">
+        <div class="eyebrow">Identity &amp; least privilege</div>
+        <table class="t">
+          <tr><th>Identity</th><th>Used by</th><th>Can do</th></tr>
+          <tr><td><code>sftp-export-reader</code></td><td>SFTPGo pods (Workload Identity)</td><td>Read objects in the <b>Export bucket only</b>; nothing on Source</td></tr>
+          <tr><td><code>external-onboarding</code></td><td>Setup page pod (Workload Identity)</td><td>Read/write request state; read SMTP secret. <b>No video access</b></td></tr>
+          <tr><td><code>approval-console</code></td><td>Cloud Run console</td><td>Request state; read Source; write/delete Export; read SMTP secret; call SFTPGo admin API</td></tr>
+          <tr><td>IAP service agent</td><td>Identity-Aware Proxy</td><td>Invoke the console (Cloud Run invoker)</td></tr>
+          <tr><td>Reviewer group</td><td>Client staff</td><td><code>roles/iap.httpsResourceAccessor</code> on the console only</td></tr>
+          <tr><td>Hospital users</td><td>SFTPGo accounts (not Google identities)</td><td>List + download in one private folder, from approved CIDRs, until expiry</td></tr>
+        </table>
+        <p class="muted" style="font-size:12px;margin-top:8px">No service account keys are created anywhere; all workloads use short-lived tokens.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="eyebrow">Request lifecycle (state machine)</div>
+      <div class="flow" style="margin-top:6px">
+        <div class="fbox"><b>REQUESTED</b><span>Reviewer logs the emailed request. Domain checked. Nothing provisioned.</span></div><div class="farrow">→</div>
+        <div class="fbox"><b>INVITED</b><span>SFTPGo account created with <code>status=0</code>, chroot to the per-request prefix. Email #1 with a 48-hour token.</span></div><div class="farrow">→</div>
+        <div class="fbox"><b>PENDING APPROVAL</b><span>Password (Argon2id) and TOTP saved; still disabled. TOTP secret removed from request state. Email #2.</span></div><div class="farrow">→</div>
+        <div class="fbox" style="border-color:var(--success)"><b>APPROVED</b><span>Files copied with the hospital CMEK and <code>customTime</code> = expiry; <code>status=1</code> until expiry. Email #3.</span></div>
+      </div>
+      <p class="muted" style="font-size:12.5px;margin-top:10px">Side exits: <b>DECLINED</b> (from REQUESTED) · <b>REJECTED / REVOKED</b> (from INVITED, PENDING or APPROVED: account disabled and staged files deleted). One active request per recipient.</p>
+    </div>
+
+    <div class="grid g3" style="margin-top:16px">
+      <div class="card">
+        <div class="eyebrow">Storage layout</div>
+        <div class="term" style="border-radius:10px;font-size:11.5px">gs://&lt;project&gt;-source-videos/
+  hospitals/&lt;hospital&gt;/&lt;session&gt;_*.mp4
+<span class="m">  # archive · versioned · no external access</span>
+
+gs://&lt;project&gt;-export-videos/
+  hospitals/&lt;hospital&gt;/systems/&lt;system&gt;/
+    requests/&lt;request-id&gt;/&lt;files&gt;
+<span class="m">  # = the user's chroot · read-only</span>
+
+gs://&lt;project&gt;-control-state/
+  requests/ tokens/ active/ emails/</div>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Encryption &amp; disposal</div>
+        <ul class="list" style="font-size:13px">
+          <li>Cloud HSM keys (FIPS 140-2 Level 3), AES-256, 90-day rotation</li>
+          <li>One key per hospital for its videos, plus an infrastructure key for SQL, BigQuery and bucket defaults</li>
+          <li>Uniform bucket-level access and public access prevention on every bucket</li>
+          <li>Lifecycle rule: delete 1 day after <code>customTime</code> (= the approved expiry)</li>
+          <li>Safety net: delete anything older than max window + 2 days</li>
+          <li>Disable a key version to cut off one hospital; destroy it to crypto-shred</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Audit &amp; evidence</div>
+        <ul class="list" style="font-size:13px">
+          <li>Data Access audit logs (read/write) on Cloud Storage and Cloud KMS</li>
+          <li>Structured JSON events from the console, setup page and SFTPGo (with client IP)</li>
+          <li>Cloud Armor request logs and Identity-Aware Proxy access logs</li>
+          <li>Log sink → Cloud Logging bucket, 2,190-day retention (lockable)</li>
+          <li>Log sink → BigQuery dataset (partitioned, CMEK) for reporting</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card">
+        <div class="eyebrow">Infrastructure as code &amp; testing</div>
+        <table class="t">
+          <tr><th>Piece</th><th>What it does</th></tr>
+          <tr><td>Terraform (google / google-beta)</td><td>Project, APIs, VPC/NAT, Cloud HSM keys, buckets and lifecycle, Cloud SQL (PSC), GKE Autopilot, Cloud Run + IAP, Cloud Armor, Secret Manager, log sinks</td></tr>
+          <tr><td>Terraform policy tests</td><td>Offline checks: encryption level, bucket lockdown, expiry rules, IAP on, private egress, private nodes, no public SQL, WAF default-deny, 6-year retention</td></tr>
+          <tr><td>Kubernetes deployer</td><td>Applies SFTPGo, the setup page, load balancers, Ingress + Cloud Armor via the GKE API (no kubectl needed)</td></tr>
+          <tr><td>End-to-end test suite</td><td>10 automated stages run against the live environment: WAF block, intake, invite, MFA, approval and staging, email, SFTP resume, key kill switch, audit</td></tr>
+          <tr><td>Setup wizard</td><td>One command: authenticate, build, test, deploy, verify. Also supports test-only and teardown</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Works under strict organization policies</div>
+        <table class="t">
+          <tr><th>Policy</th><th>How the design complies</th></tr>
+          <tr><td>Keys must be HSM-backed, rotated ≤ 90 days</td><td>All keys use HSM protection and a 90-day rotation</td></tr>
+          <tr><td>No external IPs on VMs</td><td>GKE private nodes; only load balancers are public</td></tr>
+          <tr><td>No public database / authorized networks</td><td>Cloud SQL with public IP disabled, reached over PSC</td></tr>
+          <tr><td>VPC peering restricted</td><td>PSC for both Cloud SQL and the GKE control plane</td></tr>
+          <tr><td>No service account key creation</td><td>Workload Identity and metadata-server tokens only</td></tr>
+          <tr><td>Domain-restricted sharing</td><td>Console access granted to company identities via IAP, never to all users</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================= WHY SFTPGO & HIPAA -->
+  <section class="tab" id="tab-sftpgo">
+    <div class="eyebrow">Why SFTPGo</div>
+    <div class="title">The secure transfer server hospital users connect to</div>
+    <p class="lead">SFTPGo is a mature, open-source file transfer server with a commercial Enterprise edition. In this solution, it's the only thing hospital users ever connect to for downloads. It reads the approved files straight from your Cloud Storage, and it enforces who can sign in, what they can see, and until when.</p>
+
+    <div class="grid g3" style="margin-top:22px">
+      <div class="card"><h3 style="font-size:15px;margin-bottom:6px">🔌 Speaks the hospital's language</h3><p class="muted">SFTP for IT teams and scripts, a browser download page for everyone else, and WebDAV. These work with tools hospitals already use (Cyberduck, WinSCP, FileZilla), so there's nothing new to install.</p></div>
+      <div class="card"><h3 style="font-size:15px;margin-bottom:6px">⏯️ Handles huge files reliably</h3><p class="muted">If a multi-terabyte download drops, it resumes from the exact byte where it stopped. Nobody has to start over.</p></div>
+      <div class="card"><h3 style="font-size:15px;margin-bottom:6px">☁️ Reads directly from Cloud Storage</h3><p class="muted">No file servers or disks. SFTPGo streams from your bucket using short-lived Google credentials, so no keys are stored anywhere.</p></div>
+      <div class="card"><h3 style="font-size:15px;margin-bottom:6px">🔐 Strong sign-in for outside users</h3><p class="muted">Password plus authenticator-app code on every sign-in, for people who don't have accounts with you.</p></div>
+      <div class="card"><h3 style="font-size:15px;margin-bottom:6px">📁 Each user sees only their folder</h3><p class="muted">Every account is locked to one private folder, read-only, limited to the hospital's network, with an expiry date.</p></div>
+      <div class="card"><h3 style="font-size:15px;margin-bottom:6px">🤖 Driven by your approval workflow</h3><p class="muted">The review console creates, enables, expires and revokes accounts automatically through SFTPGo's private admin API, so nobody configures it by hand.</p></div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="eyebrow">How it's deployed</div>
+      <div class="flow">
+        <div class="fbox"><b>🏥 Hospital user</b><span>SFTP, browser or WebDAV</span></div>
+        <div class="farrow">→</div>
+        <div class="fbox"><b>🧱 Network allowlist</b><span>Only approved hospital networks get through (Google load balancer)</span></div>
+        <div class="farrow">→</div>
+        <div class="fbox" style="border-color:var(--primary)"><b>🚀 SFTPGo (2+ copies)</b><span>On GKE Autopilot with private nodes. Google manages servers and patching.</span></div>
+        <div class="farrow">→</div>
+        <div class="fbox"><b>🗄️ Private download folder</b><span>Cloud Storage, encrypted with the hospital's own hardware key (Cloud HSM)</span></div>
+      </div>
+      <div class="grid g3" style="margin-top:12px">
+        <div class="sub"><b>Accounts database</b><p class="muted" style="font-size:12.5px;margin-top:4px">Cloud SQL (PostgreSQL), private network only. It holds user records, password hashes and MFA settings, so any SFTPGo copy can serve any user. No videos are stored here.</p></div>
+        <div class="sub"><b>Admin API: private only</b><p class="muted" style="font-size:12.5px;margin-top:4px">Reachable only from the review console over your private network. It's never exposed to the internet.</p></div>
+        <div class="sub"><b>Every action logged</b><p class="muted" style="font-size:12.5px;margin-top:4px">Sign-ins, file reads, bytes and real client network address go to the six-year audit vault.</p></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="eyebrow">Why this is HIPAA-compliant</div>
+      <div class="grid g2" style="align-items:start">
+        <div>
+          <p style="font-size:14.5px">No software is "HIPAA certified". Compliance comes from three things:</p>
+          <ul class="list" style="margin-top:8px">
+            <li><b>A business associate agreement (BAA)</b> covering every service that touches patient data. Here, that's only Google Cloud's BAA.</li>
+            <li><b>The right safeguards, configured and enforced</b>, as shown in the table.</li>
+            <li><b>Operating it properly</b>: approvals, reviews and incident response, with evidence.</li>
+          </ul>
+          <p class="muted" style="margin-top:10px">SFTPGo is software you run inside Google Cloud services covered by the BAA. It isn't a separate vendor holding your data, so no extra BAA is needed. For production, the SFTPGo Enterprise edition adds a commercial license and vendor support.</p>
+        </div>
+        <div class="sub">
+          <b>Shared responsibility</b>
+          <p class="muted" style="font-size:12.5px;margin-top:4px">Google secures the infrastructure under its BAA. This solution enforces the technical safeguards. Your organization remains responsible for the risk analysis, policies, workforce training and break-glass procedures, and the solution produces the evidence for those.</p>
+        </div>
+      </div>
+      <div style="overflow:auto;margin-top:16px;border:1px solid var(--border);border-radius:12px">
+        <table class="t" id="hipaaTable"></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================= COMPARE -->
+  <section class="tab" id="tab-compare">
+    <div class="eyebrow">A fair comparison</div>
+    <div class="title">This solution (SFTPGo on Google Cloud) vs. Files.com connected to Cloud Storage</div>
+    <p class="lead">Both can deliver large files to hospitals. The real differences are <b>where patient data travels</b>, <b>how approval and expiry work</b>, and <b>who runs the system day to day</b>.</p>
+
+    <div class="grid g2" style="margin-top:20px">
+      <div class="card">
+        <div class="eyebrow">This solution: data path</div>
+        <div class="flow">
+          <div class="fbox"><b>Hospital</b></div><div class="farrow">→</div>
+          <div class="fbox" style="border-color:var(--primary)"><b>SFTPGo</b><span>in your Google Cloud</span></div><div class="farrow">→</div>
+          <div class="fbox"><b>Your Cloud Storage</b></div>
+        </div>
+        <p class="muted" style="margin-top:10px;font-size:12.5px">Patient data stays in your environment the whole way. One BAA (Google Cloud).</p>
+      </div>
+      <div class="card">
+        <div class="eyebrow" style="color:var(--warn)">Files.com: data path</div>
+        <div class="flow">
+          <div class="fbox"><b>Hospital</b></div><div class="farrow">→</div>
+          <div class="fbox" style="border-color:var(--warn)"><b>Files.com service</b><span>vendor's cloud</span></div><div class="farrow">→</div>
+          <div class="fbox"><b>Your Cloud Storage</b></div>
+        </div>
+        <p class="muted" style="margin-top:10px;font-size:12.5px">Patient data passes through the vendor's service. Two BAAs (Google Cloud + Files.com).</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;padding:0;overflow:hidden">
+      <table class="t" id="cmpTable"></table>
+    </div>
+    <p class="muted" style="font-size:12px;margin:8px 2px 0"><span class="rate good">●</span>Strong &nbsp; <span class="rate partial">◐</span>Possible with extra work / partial &nbsp; <span class="rate gap">○</span>Not available</p>
+
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card" style="border-color:color-mix(in srgb,var(--primary) 45%,var(--border))">
+        <h3 style="font-size:15px;margin-bottom:8px">Choose this solution when…</h3>
+        <ul class="list">
+          <li>Patient data must stay inside your own cloud environment and BAA</li>
+          <li>You need a built-in approval step and hard expiry on every share</li>
+          <li>You want per-hospital encryption keys you can switch off instantly</li>
+          <li>You want spend to count toward your Google Cloud commitment</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:color-mix(in srgb,var(--warn) 45%,var(--border))">
+        <h3 style="font-size:15px;margin-bottom:8px">Choose Files.com when…</h3>
+        <ul class="list">
+          <li>You don't want to run any transfer infrastructure yourselves</li>
+          <li>You need a polished, branded portal and desktop app on day one</li>
+          <li>You need many ready-made connectors beyond Google Cloud</li>
+          <li>A second vendor in the data path is acceptable to your compliance team</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="eyebrow">Cost model: 3-year view</div>
+      <p class="muted" style="margin-bottom:14px">Defaults are illustrative placeholders. Replace them with your contracted rates and actual quotes. Internet download (egress) charges usually dominate, and <b>both options pay them</b>, because Files.com also reads from your Cloud Storage.</p>
+      <div class="grid g2">
+        <div class="sub">
+          <div style="display:flex;justify-content:space-between"><b>Data downloaded per month</b><span class="mono" style="color:var(--primary);font-weight:800" id="tbVal"></span></div>
+          <input type="range" id="tb" min="5" max="250" step="5" value="40" oninput="calc()">
+        </div>
+        <div class="sub">
+          <div style="display:flex;justify-content:space-between"><b>Active hospital user accounts</b><span class="mono" style="color:var(--primary);font-weight:800" id="usersVal"></span></div>
+          <input type="range" id="users" min="25" max="1500" step="25" value="300" oninput="calc()">
+        </div>
+      </div>
+      <details style="margin-top:12px">
+        <summary>Edit assumptions</summary>
+        <div class="grid g3" style="margin-top:10px">
+          <div class="sub"><b>Shared</b>
+            <div class="in-row"><label>Internet egress ($/TB)</label><input type="number" id="egress" value="80" oninput="calc()"></div>
+            <div class="in-row"><label>Engineering rate ($/hr)</label><input type="number" id="rate" value="150" oninput="calc()"></div>
+          </div>
+          <div class="sub"><b style="color:var(--primary)">This solution</b>
+            <div class="in-row"><label>Cloud infrastructure ($/mo)</label><input type="number" id="infra" value="600" oninput="calc()"></div>
+            <div class="in-row"><label>SFTPGo Enterprise ($/mo)</label><input type="number" id="lic" value="500" oninput="calc()"></div>
+            <div class="in-row"><label>Operations (hrs/mo)</label><input type="number" id="opsOurs" value="8" oninput="calc()"></div>
+            <div class="in-row"><label>One-time setup ($)</label><input type="number" id="oneOurs" value="30000" oninput="calc()"></div>
+          </div>
+          <div class="sub"><b style="color:var(--warn)">Files.com (use your quote)</b>
+            <div class="in-row"><label>Plan fee ($/mo)</label><input type="number" id="fPlan" value="2000" oninput="calc()"></div>
+            <div class="in-row"><label>Per extra account ($/mo)</label><input type="number" id="fUser" value="3" oninput="calc()"></div>
+            <div class="in-row"><label>Accounts included</label><input type="number" id="fIncl" value="100" oninput="calc()"></div>
+            <div class="in-row"><label>Bandwidth overage ($/TB)</label><input type="number" id="fOver" value="50" oninput="calc()"></div>
+            <div class="in-row"><label>Bandwidth included (TB)</label><input type="number" id="fInclTB" value="5" oninput="calc()"></div>
+            <div class="in-row"><label>Remaining Google Cloud ($/mo)</label><input type="number" id="fGcp" value="150" oninput="calc()"></div>
+            <div class="in-row"><label>Operations (hrs/mo)</label><input type="number" id="opsFiles" value="3" oninput="calc()"></div>
+            <div class="in-row"><label>One-time setup ($)</label><input type="number" id="oneFiles" value="25000" oninput="calc()"></div>
+          </div>
+        </div>
+      </details>
+      <div class="grid g3" style="margin-top:16px">
+        <div class="sub" style="border-color:var(--primary)"><div class="eyebrow">This solution · monthly</div><div class="big" id="oursM"></div><div class="muted" id="oursY"></div></div>
+        <div class="sub" style="border-color:var(--warn)"><div class="eyebrow" style="color:var(--warn)">Files.com · monthly</div><div class="big" id="filesM"></div><div class="muted" id="filesY"></div></div>
+        <div class="sub"><div class="eyebrow" id="deltaEyebrow">3-year difference</div><div class="big" id="delta"></div><div class="muted" id="deltaPct"></div></div>
+      </div>
+      <div style="margin-top:14px">
+        <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:6px"><b>This solution: 3-year total</b><span class="mono" id="tcoOurs"></span></div>
+        <div class="stack" id="stackOurs"></div>
+        <div style="display:flex;justify-content:space-between;font-size:12.5px;margin:12px 0 6px"><b>Files.com: 3-year total</b><span class="mono" id="tcoFiles"></span></div>
+        <div class="stack" id="stackFiles"></div>
+        <p class="muted" style="font-size:11.5px;margin-top:8px"><span class="sw" style="background:#64748b"></span>One-time &nbsp; <span class="sw" style="background:var(--primary)"></span>Platform / license &nbsp; <span class="sw" style="background:var(--teal)"></span>Internet egress &nbsp; <span class="sw" style="background:var(--warn)"></span>Vendor bandwidth / accounts &nbsp; <span class="sw" style="background:var(--violet)"></span>Operations</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================= ROLLOUT -->
+  <section class="tab" id="tab-rollout">
+    <div class="eyebrow">Time to value</div>
+    <div class="title">From working proof of concept to the first hospital in weeks</div>
+    <p class="lead">The infrastructure, review console, setup page and automated tests are already built as code and running in a sandbox. What's left is connecting them to your environment and completing your security review.</p>
+
+    <div class="grid g4" style="margin-top:22px">
+      <div class="card phase" style="border-color:var(--success)"><div class="wk" style="color:var(--success)">Today</div><h3 style="font-size:15px;margin:6px 0">Working proof of concept</h3><p class="muted">The whole journey runs in a Google Cloud sandbox, deployed with one command and checked by an automated end-to-end test.</p></div>
+      <div class="card phase"><div class="wk" style="color:var(--primary)">Week 1</div><h3 style="font-size:15px;margin:6px 0">Connect to your environment</h3><p class="muted">Your Google Cloud project, your web addresses and certificates, your reviewer group for sign-in, and your email relay.</p></div>
+      <div class="card phase"><div class="wk" style="color:var(--primary)">Week 2</div><h3 style="font-size:15px;margin:6px 0">Production hardening</h3><p class="muted">SFTPGo Enterprise edition, your hospital list (email domains and networks), and a link to your request or ticketing system.</p></div>
+      <div class="card phase"><div class="wk" style="color:var(--primary)">Weeks 3–4</div><h3 style="font-size:15px;margin:6px 0">Review and first hospital</h3><p class="muted">Your security review and penetration test, lock the six-year audit vault, then onboard a pilot hospital.</p></div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="eyebrow">Indicative time to first hospital</div>
+      <div style="display:grid;grid-template-columns:200px 1fr;gap:12px;align-items:center;margin-top:8px">
+        <b>This solution</b><div><div class="ttv-bar" style="width:36%;background:var(--primary)">~3–4 weeks</div></div>
+        <b>Files.com + Cloud Storage</b><div><div class="ttv-bar" style="width:82%;background:var(--warn);color:#2a1a00">~8–11 weeks (vendor review, BAA, approval workflow build)</div></div>
+      </div>
+      <p class="muted" style="font-size:12px;margin-top:10px">Indicative only. Actual timing depends on your procurement and security review process.</p>
+    </div>
+
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card">
+        <h3 style="font-size:15px;margin-bottom:8px">What we need from you to start</h3>
+        <ul class="list">
+          <li>The reviewer group that can approve requests</li>
+          <li>Your email relay and sending address</li>
+          <li>Hospital list: approved email domains and networks</li>
+          <li>Window choices (default 3, 7 or 14 days)</li>
+          <li>Approval to lock the six-year audit vault in production</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 style="font-size:15px;margin-bottom:8px">Suggested next step</h3>
+        <p class="muted">A 60-minute working session: deploy the latest build live, run the full end-to-end test on screen, and walk your security team through the review console and the audit trail.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>Secure Video Access for Hospitals · Solution walkthrough (proof of concept)</span>
+  <span>Navigate: <span class="kbd">1</span>–<span class="kbd">7</span> tabs · <span class="kbd">←</span> <span class="kbd">→</span> journey steps · <span class="kbd">T</span> theme · <span class="kbd">F</span> full screen</span>
+</footer>
+
+<script>
+/* ======================================================================
+   Shared content
+   ====================================================================== */
+const TABS = [
+  ['overview','Overview'], ['user','Hospital user journey'], ['team','Client team journey'],
+  ['arch','Technical architecture'], ['sftpgo','Why SFTPGo & HIPAA'], ['compare','SFTPGo vs Files.com'], ['rollout','Rollout plan']
+];
+
+const TILES = {
+  iap:     {n:'Staff sign-in',        s:'Google Cloud IAP',          g:'entry'},
+  armor:   {n:'Web protection',       s:'Cloud Armor',               g:'entry'},
+  firewall:{n:'Network allowlist',    s:'Load balancer rules',       g:'entry'},
+  console: {n:'Review console',       s:'Cloud Run',                 g:'app'},
+  portal:  {n:'Setup page',           s:'GKE',                       g:'app'},
+  sftpgo:  {n:'Transfer server',      s:'SFTPGo · GKE Autopilot',    g:'app'},
+  email:   {n:'Email',                s:'SMTP relay · Secret Manager',g:'app'},
+  source:  {n:'Video archive',        s:'Cloud Storage',             g:'data'},
+  export:  {n:'Private download folder', s:'Cloud Storage',          g:'data'},
+  sql:     {n:'Accounts database',    s:'Cloud SQL · private',       g:'data'},
+  hsm:     {n:'Hospital keys',        s:'Cloud HSM',                 g:'data'},
+  logs:    {n:'Audit vault',          s:'Logging · BigQuery',        g:'evidence'}
+};
+const GROUPS = [['entry','Front doors'],['app','Applications'],['data','Data & keys'],['evidence','Evidence']];
+
+/* Fixed demo clock so the story is consistent */
+const APPROVED_AT = Date.UTC(2026, 10, 18, 14, 2);
+let chosenWindow = 7;
+const fmtDate = ms => { const d=new Date(ms); return d.toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'})+' '+String(d.getUTCHours()).padStart(2,'0')+':'+String(d.getUTCMinutes()).padStart(2,'0')+' UTC'; };
+const expiry = () => fmtDate(APPROVED_AT + chosenWindow*86400000);
+
+/* Mock screen helpers */
+const browser = (url, body) => `<div class="mock"><div class="mbar"><i></i><i></i><i></i><span class="url">🔒 ${url}</span></div><div class="mbody">${body}</div></div>`;
+const mail = o => `<div class="mock"><div class="mbar"><i></i><i></i><i></i><span class="url">✉ ${o.app||'Mail'}</span></div>
+  <div class="mail-h"><div class="subj">${o.subject}</div><div class="meta"><b>${o.from}</b> → ${o.to}</div>${o.attach?`<div class="att">📎 ${o.attach}</div>`:''}</div>
+  <div class="mbody">${o.body}</div></div>`;
+const term = (title, body) => `<div class="mock"><div class="mbar"><i></i><i></i><i></i><span class="url">${title}</span></div><div class="term">${body}</div></div>`;
+const qr = () => { let h='<div class="qr">'; for(let r=0;r<21;r++){ for(let c=0;c<21;c++){ const f=(r<7&&c<7)||(r<7&&c>13)||(r>13&&c<7); const ring=f&&((r%14===0||r%14===6||c%14===0||c%14===6)||((r%14)>=2&&(r%14)<=4&&(c%14)>=2&&(c%14)<=4)); const on=f?ring:((r*7+c*13+r*c)%5<2); h+=`<span class="${on?'b':''}"></span>`; } } return h+'</div>'; };
+
+/* ======================================================================
+   Hospital user journey
+   ====================================================================== */
+const USER = [
+ { title:'Request access', actor:'Hospital user', caption:'The hospital user asks for a recording the way they do today: by email.',
+   mock:()=>mail({app:'Mail · New message', subject:'Request: procedure recording, Session 1001', from:'dr.lee@examplehospital.org', to:'video-requests@client.com',
+     body:`<p>Hello,</p><p style="margin-top:8px">Could you share the recording for <b>Session 1001</b> from <b>System A</b> at Example Hospital? I'm the treating surgeon.</p><p style="margin-top:8px">Thank you,<br>Dr. Lee, Example Hospital</p>
+     <div style="margin-top:16px"><button class="hot" onclick="advance()">Send request</button></div>`}),
+   behind:['<b>Nothing is created or shared yet.</b> The request is just an email to your team.','The recordings stay in the <b>video archive</b>, encrypted with that hospital\'s own hardware key, with no outside access.','Your team picks it up in the review console (see the client team journey).'],
+   tiles:['source','hsm'], why:'Hospitals keep using a channel they already know. The controlled process starts when your team logs the request.',
+   safeguards:['Encryption at rest','No outside access to the archive'] },
+
+ { title:'Receive the invite', actor:'Hospital user', caption:'Your team approved the request for setup. The user receives a secure, single-use link.',
+   mock:()=>mail({app:'Mail · Inbox', subject:'Set up secure access for your video request', from:'no-reply@client.com', to:'dr.lee@examplehospital.org',
+     body:`<p>We received your request for <b>Session 1001</b>.</p>
+     <p style="margin-top:8px"><b>Step 1.</b> Set a password and connect an authenticator app. This link works once and expires in 48 hours.</p>
+     <div style="margin:14px 0"><button class="hot" onclick="advance()">Set password &amp; enable sign-in protection</button></div>
+     <p><b>Step 2.</b> Our team reviews your request. You'll get an email with download instructions and the date your access ends.</p>
+     <p class="muted" style="margin-top:10px;font-size:12px">Please don't reply with patient information.</p>`}),
+   behind:['When your team clicked <b>Send invite</b>, a <b>switched-off, read-only account</b> was created on the transfer server, locked to a private folder for this request only.','The email is sent through <b>your company\'s email relay</b>; its credentials are kept in Secret Manager.','The link is <b>single-use and expires in 48 hours</b>. The email contains no patient information.'],
+   tiles:['console','sftpgo','sql','email'], why:'The account exists before the link goes out, but it can\'t sign in or see anything. A forwarded link is useless without approval.',
+   safeguards:['Unique user identity','Minimum necessary access'] },
+
+ { title:'Set password + MFA', actor:'Hospital user', caption:'The user sets a strong password and connects an authenticator app. No account with your company is needed.',
+   mock:()=>browser('access.client.com/setup/••••••', `
+     <div style="display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start">
+       <div>${qr()}<div class="muted" style="font-size:11px;margin-top:6px;text-align:center">Scan with your<br>authenticator app</div></div>
+       <div>
+         <div style="font-weight:750;font-size:15px;margin-bottom:8px">Secure your access</div>
+         <label class="muted" style="font-size:12px">Create a password (at least 14 characters)</label><input class="input" type="password" value="••••••••••••••••" readonly>
+         <label class="muted" style="font-size:12px">Enter the 6-digit code from your app</label><input class="input mono" value="482 913" readonly>
+         <button class="hot" onclick="advance()">Complete setup</button>
+       </div>
+     </div>`),
+   behind:['The page is protected by <b>Cloud Armor</b>: it blocks common web attacks, limits repeated attempts, and only allows approved hospital networks.','This page can <b>only do setup</b>. It has no admin functions and no access to any videos.','The 6-digit code is checked (standard TOTP). The password is stored as a strong hash in the <b>transfer server\'s accounts database</b>, together with the MFA setting.','The account <b>stays switched off</b>, and your reviewers get an email saying the request is ready.'],
+   tiles:['armor','portal','sftpgo','sql','email','logs'], why:'Strong sign-in for people outside your company, without making them create an account with you.',
+   safeguards:['Person authentication (MFA)','Password management','Protection at the front door'] },
+
+ { title:'Wait for review', actor:'Hospital user', caption:'Setup is complete. The user knows what happens next. Nothing is accessible yet.',
+   mock:()=>browser('access.client.com/setup/••••••', `
+     <div style="text-align:center;padding:24px 10px">
+       <div style="font-size:40px">✅</div>
+       <div style="font-size:17px;font-weight:750;margin:8px 0">Setup complete</div>
+       <p class="muted">Your request is being reviewed. You'll receive an email when access is approved, with download instructions and the date your access ends.</p>
+       <div class="toast info" style="display:inline-block;margin-top:14px">Status: waiting for approval</div>
+       <div style="margin-top:16px"><button class="hot" onclick="advance()">Next: the approval email arrives</button></div>
+     </div>`),
+   behind:['<b>No files have been copied</b>, so there\'s nothing to download yet.','Any sign-in attempt is <b>rejected</b> because the account is still switched off.','The setup link <b>can\'t be reused</b>.'],
+   tiles:['sftpgo','logs'], why:'Nothing sensitive is exposed while the request waits for a person to approve it.',
+   safeguards:['Access only after authorization'] },
+
+ { title:'Access approved', actor:'Hospital user', caption:'The user receives a clear confirmation: what\'s available, how long they have, and how to download.',
+   mock:()=>mail({app:'Mail · Inbox', subject:`Access approved: your download is available for ${chosenWindow} days`, from:'no-reply@client.com', to:'dr.lee@examplehospital.org', attach:'download-profile.duck',
+     body:`<p><b>You have ${chosenWindow} days to download your files, until ${expiry()}.</b> After that, access ends and the files are deleted automatically.</p>
+     <table class="t" style="margin:12px 0"><tr><th>File</th><th>Size</th></tr>
+       <tr><td>session-1001_part1.mp4</td><td>1.8 TB</td></tr><tr><td>session-1001_part2.mp4</td><td>1.6 TB</td></tr>
+       <tr><td>session-1001_part3.mp4</td><td>0.9 TB</td></tr><tr><td>session-1001_data.json</td><td>42 MB</td></tr></table>
+     <p><b>Recommended for large files:</b> open the attached profile in Cyberduck, or connect with SFTP to <code>sftp.client.com</code> (port 22). Sign in with your password plus your 6-digit code.</p>
+     <p style="margin-top:6px"><b>Or download in your browser:</b> <code>files.client.com</code></p>
+     <div style="margin-top:14px"><button class="hot" onclick="advance()">Open download profile</button></div>`}),
+   behind:['When the reviewer clicked <b>Approve</b>, only the requested files were <b>copied into this user\'s private folder</b>, inside Google\'s network.','Each file is encrypted with <b>Example Hospital\'s own hardware key</b> and stamped to delete itself when the window ends.','The account is <b>switched on until the exact end date</b>, then this email is sent.'],
+   tiles:['console','source','export','hsm','sftpgo','email'], why:'The download clock and the deletion clock both start at approval, so the user always gets the full window.',
+   safeguards:['Encryption at rest','Secure disposal scheduled'] },
+
+ { title:'Download (with resume)', actor:'Hospital user', caption:'A multi-terabyte download over SFTP. If the connection drops, it continues from where it stopped.',
+   mock:()=>`<div class="mock"><div class="mbar"><i></i><i></i><i></i><span class="url">Cyberduck · sftp.client.com · dr.lee@examplehospital.org</span></div>
+     <div class="mbody">
+       <div class="field"><span>Signed in with</span><b>password + 6-digit code ✓</b></div>
+       <div class="field"><span>You can see</span><b>your private folder only · read-only</b></div>
+       <div style="display:flex;justify-content:space-between;font-size:12.5px;margin:12px 0 6px"><b>session-1001_part1.mp4 (1.8 TB)</b><span class="mono" id="dlPct">0%</span></div>
+       <div class="prog"><div id="dlBar"></div></div>
+       <div id="dlStatus" class="toast info">Downloading…</div>
+       <div style="margin-top:14px"><button class="ghost" onclick="startDownload()">↻ Replay</button><button class="hot" onclick="advance()">Next: access ends</button></div>
+     </div></div>`,
+   onEnter:()=>startDownload(),
+   behind:['Connections are accepted <b>only from Example Hospital\'s network</b>, checked at Google\'s edge and again on the account.','<b>Password + 6-digit code</b> are required on every sign-in. Idle sessions end after 15 minutes.','When the connection drops, the app reconnects and asks for the rest of the file <b>from the exact byte it stopped at</b>. Any copy of the transfer server can continue it.','Every file read is logged with <b>who, what, how much and from which address</b>.'],
+   tiles:['firewall','sftpgo','sql','export','hsm','logs'], why:'Reliable delivery of very large files, using tools hospital IT already knows, with each byte traceable to a person.',
+   safeguards:['Encryption in transit','Automatic logoff','Integrity','Audit controls'] },
+
+ { title:'Access ends', actor:'Automatic', caption:'When the window ends, sign-in stops and the files are deleted. No reminders or manual clean-up needed.',
+   mock:()=>term('Terminal · after the end date', `<span class="m">$</span> sftp dr.lee@examplehospital.org@sftp.client.com
+<span class="r">Access denied: account expired on ${expiry()}</span>
+
+<span class="m"># Private download folder</span>
+<span class="y">0 files</span>, deleted automatically after the access window
+
+<span class="m"># Audit vault (kept 6 years)</span>
+<span class="g">✓</span> request · invite · setup · approval · 37 downloads · expiry: all recorded`) + `<div style="margin-top:12px"><button class="hot" onclick="goTab('team')">See the client team's side →</button></div>`,
+   behind:['The account\'s <b>end date</b> blocks sign-in, independent of any clean-up job.','Each file\'s <b>delete-after date</b> triggers automatic removal by Cloud Storage, with a backup rule as a safety net.','The full history stays in the <b>audit vault for six years</b>.'],
+   tiles:['sftpgo','export','logs'], why:'Two independent controls end access, and no copies are left behind.',
+   safeguards:['Secure disposal','6-year retention'] }
+];
+
+/* ======================================================================
+   Client team journey
+   ====================================================================== */
+const TEAM = [
+ { title:'Sign in', actor:'Client reviewer', caption:'Reviewers sign in with their normal company account. Only approved staff can reach the console.',
+   mock:()=>browser('review.client.com', `
+     <div style="max-width:360px;margin:6px auto;text-align:center">
+       <div style="font-size:30px">🔐</div>
+       <div style="font-size:17px;font-weight:750;margin:6px 0">Sign in to continue to the Video Access Console</div>
+       <p class="muted" style="font-size:12.5px">Protected by Google Cloud Identity-Aware Proxy</p>
+       <div class="field" style="margin-top:14px;justify-content:flex-start;gap:10px"><span style="font-size:20px">👤</span><span style="text-align:left"><b style="color:var(--text)">Jordan Reviewer</b><br>reviewer@client.com</span></div>
+       <button class="hot" onclick="advance()" style="width:100%">Continue (company sign-in + MFA)</button>
+     </div>`),
+   behind:['<b>Google Cloud IAP</b> checks the person\'s company identity and multi-factor sign-in at Google\'s edge, <b>before</b> anything reaches the console.','Only members of the <b>approved reviewer group</b> are let through. Everyone else is blocked.','The console also <b>verifies Google\'s signed identity token</b>, so every action is tied to a real, named person.'],
+   tiles:['iap','console','logs'], why:'Uses your existing company sign-in and MFA: no new passwords, and no internet-exposed admin page.',
+   safeguards:['Workforce access control','Person authentication'] },
+
+ { title:'Log the request', actor:'Client reviewer', caption:'The reviewer records the hospital\'s email request. Nothing is created or sent yet.',
+   mock:()=>browser('review.client.com', `
+     <div style="font-weight:750;font-size:15px;margin-bottom:10px">Log an incoming request</div>
+     <div class="grid g2" style="gap:8px">
+       <div class="field"><span>Requester</span><b>dr.lee@examplehospital.org</b></div>
+       <div class="field"><span>Hospital</span><b>Example Hospital</b></div>
+       <div class="field"><span>System</span><b>System A</b></div>
+       <div class="field"><span>Sessions</span><b>Session 1001</b></div>
+       <div class="field"><span>Received via</span><b>Email · Nov 17</b></div>
+       <div class="field"><span>Reference</span><b>CASE-1001</b></div>
+     </div>
+     <div class="toast bad">✕ Example: a request from <b>someone@gmail.com</b> is rejected. That domain isn't approved for Example Hospital.</div>
+     <div style="margin-top:12px"><button class="hot" onclick="advance()">Log request</button></div>`),
+   behind:['The requester\'s email domain is checked against the <b>approved domains for that hospital</b>. Personal or mismatched addresses are rejected.','The request is saved with <b>who logged it, when and how it arrived</b>.','<b>No account is created and no email is sent</b> at this point.'],
+   tiles:['iap','console','logs'], why:'Every request is on the record from the start, and mistakes like a personal email address are caught immediately.',
+   safeguards:['Minimum necessary','Audit controls'] },
+
+ { title:'Send the invite', actor:'Client reviewer', caption:'One click sends the hospital user a secure setup link.',
+   mock:()=>browser('review.client.com', `
+     <div style="font-weight:750;font-size:15px;margin-bottom:10px">Request queue</div>
+     <table class="t">
+       <tr><th>Request</th><th>Requester</th><th>Sessions</th><th>Status</th><th></th></tr>
+       <tr><td><b>REQ-4F2A</b><br><span class="muted">CASE-1001</span></td><td>dr.lee@examplehospital.org</td><td>Session 1001</td><td><span class="badge" style="background:#60a5fa">REQUESTED</span></td><td><button class="hot" onclick="advance()">Send invite</button></td></tr>
+       <tr><td><b>REQ-91C0</b><br><span class="muted">CASE-0998</span></td><td>it.team@hospitalb.org</td><td>Session 0998</td><td><span class="badge" style="background:#34d399">APPROVED</span></td><td class="muted">until Nov 21</td></tr>
+     </table>`),
+   behind:['A <b>switched-off, read-only account</b> is created on the transfer server through its <b>private admin interface</b>, which isn\'t reachable from the internet.','The account is locked to a <b>private folder for this request only</b> and to <b>Example Hospital\'s network</b>.','The invite email with a <b>single-use, 48-hour link</b> goes out through your email relay.'],
+   tiles:['console','sftpgo','sql','email','logs'], why:'The account and its limits exist before the user is invited, but it stays off until a person approves it.',
+   safeguards:['Unique user identity','Access control'] },
+
+ { title:'Get notified', actor:'Client reviewer', caption:'When the hospital user finishes setup, reviewers get an email with a direct link.',
+   mock:()=>mail({app:'Mail · reviewers@client.com', subject:'[Action required] Review request REQ-4F2A: dr.lee@examplehospital.org finished setup', from:'no-reply@client.com', to:'reviewers@client.com',
+     body:`<div class="field"><span>Requester</span><b>dr.lee@examplehospital.org</b></div>
+     <div class="field"><span>Hospital / sessions</span><b>Example Hospital · Session 1001</b></div>
+     <div class="field"><span>Set up from network</span><b class="mono">203.0.113.88 (Example Hospital)</b></div>
+     <div class="field"><span>Password + MFA</span><b style="color:var(--success)">Set and verified</b></div>
+     <div style="margin-top:12px"><button class="hot" onclick="advance()">Open request</button></div>`}),
+   behind:['Sent by the <b>setup page</b> as soon as the user completes password + MFA.','It includes the <b>network address</b> the user set up from, so reviewers can spot anything unusual.','The link opens the console, which <b>requires company sign-in again</b>.'],
+   tiles:['portal','email','iap'], why:'Reviewers act at the right moment without watching a queue.',
+   safeguards:['Activity review'] },
+
+ { title:'Review & approve', actor:'Client reviewer', caption:'Everything the reviewer needs is on one screen. They choose how long access lasts.',
+   mock:()=>browser('review.client.com/requests/REQ-4F2A', `
+     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><b style="font-size:15px">REQ-4F2A</b><span class="badge" style="background:#fbbf24">READY FOR REVIEW</span></div>
+     <div class="field"><span>Requested by email</span><b>Nov 17 · logged by reviewer@client.com</b></div>
+     <div class="field"><span>Requester / MFA</span><b>dr.lee@examplehospital.org · <span style="color:var(--success)">verified</span></b></div>
+     <div class="field"><span>Set up from</span><b class="mono">203.0.113.88 (Example Hospital network)</b></div>
+     <div class="field"><span>Files to share</span><b>Session 1001 · 4 files · 4.3 TB</b></div>
+     <div class="field"><span>Private folder</span><b>read-only · this request only</b></div>
+     <div style="margin:12px 0 6px" class="muted">Access window</div>
+     <div class="seg" id="winSeg">${[3,7,14].map(d=>`<button class="${d===chosenWindow?'on':''}" onclick="pickWindow(${d})">${d} days</button>`).join('')}</div>
+     <div class="muted" style="font-size:12px;margin-top:6px" id="winNote">Access and files end ${expiry()}</div>
+     <div style="margin-top:14px"><button class="hot green" onclick="advance()">✓ Approve &amp; notify user</button><button class="ghost">✕ Reject</button></div>`),
+   behind:['The reviewer sees <b>how the request arrived, who it\'s for, whether MFA is set, and which network they used</b>.','They choose the <b>access window (3, 7 or 14 days)</b>.','Their identity comes from the <b>verified sign-in</b>, and is recorded as the approver.'],
+   tiles:['iap','console','logs'], why:'A human decision, with full context, before any patient data becomes reachable.',
+   safeguards:['Access authorization','Workforce accountability'] },
+
+ { title:'What happens on Approve', actor:'Automatic', caption:'After clicking Approve, the reviewer sees each step complete in a few seconds.',
+   mock:()=>browser('review.client.com/requests/REQ-4F2A', `
+     <div style="font-weight:750;font-size:15px;margin-bottom:6px">Approving REQ-4F2A…</div>
+     <div class="check" id="ck0"><span class="dot">✓</span>Copying 4 files (4.3 TB) into the user's private folder, inside Google's network</div>
+     <div class="check" id="ck1"><span class="dot">✓</span>Encrypted with Example Hospital's hardware key</div>
+     <div class="check" id="ck2"><span class="dot">✓</span>Files set to delete automatically on ${expiry()}</div>
+     <div class="check" id="ck3"><span class="dot">✓</span>Account switched on until ${expiry()}</div>
+     <div class="check" id="ck4"><span class="dot">✓</span>"Access approved" email sent to dr.lee@examplehospital.org</div>
+     <div class="toast ok" id="ckDone" style="opacity:0;transition:opacity .4s">✓ Approved by reviewer@client.com for ${chosenWindow} days. All steps recorded in the audit vault.</div>
+     <div style="margin-top:12px"><button class="ghost" onclick="runApproveChecklist()">↻ Replay</button><button class="hot" onclick="advance()">Next: monitor &amp; revoke</button></div>`),
+   onEnter:()=>runApproveChecklist(),
+   behind:['<b>Server-side copy</b> from the video archive to the private folder. The data never leaves Google\'s network.','Each file is <b>re-encrypted with that hospital\'s key</b> and given a <b>delete-after date</b> equal to the end of the window.','The account is <b>switched on</b> through the transfer server\'s private admin interface, with the same end date.','The <b>approval email</b> goes out last, so the user is only told once everything is ready.'],
+   tiles:['console','source','export','hsm','sftpgo','sql','email','logs'], why:'One click does everything in the right order. Nobody copies files or configures accounts by hand.',
+   safeguards:['Encryption at rest','Secure disposal scheduled','Audit controls'] },
+
+ { title:'Monitor & revoke', actor:'Client reviewer / security', caption:'See activity as it happens, and stop access in one click if anything changes.',
+   mock:()=>browser('review.client.com/requests/REQ-4F2A', `
+     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><b style="font-size:15px">REQ-4F2A</b><span class="badge" style="background:#34d399">APPROVED · until ${expiry()}</span></div>
+     <table class="t"><tr><th>Time</th><th>Activity</th><th>From</th></tr>
+       <tr><td>Nov 18 15:10</td><td>Signed in (password + MFA)</td><td class="mono">203.0.113.88</td></tr>
+       <tr><td>Nov 18 15:11</td><td>Download started: session-1001_part1.mp4</td><td class="mono">203.0.113.88</td></tr>
+       <tr><td>Nov 18 16:52</td><td>Connection dropped → resumed at 60%</td><td class="mono">203.0.113.88</td></tr></table>
+     <div style="margin-top:12px"><button class="hot red" onclick="document.getElementById('revokeMsg').style.display='block'">Revoke access now</button></div>
+     <div class="toast bad" id="revokeMsg" style="display:none">✓ Access revoked: account switched off and the private folder deleted.</div>
+     <div class="sub" style="margin-top:12px"><b>For a security incident</b><p class="muted" style="font-size:12.5px;margin-top:4px">Security can switch off a <b>hospital's encryption key</b>. All of that hospital's files become unreadable within seconds, even mid-download, while other hospitals carry on.</p></div>
+     <div style="margin-top:12px"><button class="hot" onclick="advance()">Next: audit trail</button></div>`),
+   behind:['<b>Revoke</b> switches the account off and deletes the request\'s private folder immediately.','Each hospital has its <b>own key in Cloud HSM</b>. Disabling it cuts off only that hospital\'s files, cryptographically.','All activity, including resumed downloads, shows up in the <b>audit vault</b>.'],
+   tiles:['console','sftpgo','export','hsm','logs'], why:'Two independent ways to stop access: one in the application, and one at the encryption layer.',
+   safeguards:['Incident response','Encryption'] },
+
+ { title:'Audit trail', actor:'Compliance', caption:'One query shows the complete story of any request, kept for six years.',
+   mock:()=>term('BigQuery · audit vault', `<span class="g">SELECT</span> time, event, by_whom, user, network, detail
+<span class="g">FROM</span> audit.video_access <span class="g">WHERE</span> request = 'REQ-4F2A' <span class="g">ORDER BY</span> time;
+<span class="m">────────────────────────────────────────────────────────────────────────</span>
+Nov 17 13:55  REQUEST_LOGGED  reviewer@client.com  dr.lee@…  —             via email
+Nov 17 14:00  INVITE_SENT     reviewer@client.com  dr.lee@…  —
+Nov 17 19:41  SETUP_DONE      —                    dr.lee@…  203.0.113.88  MFA verified
+Nov 18 14:02  APPROVED        reviewer@client.com  dr.lee@…  203.0.113.88  window=${chosenWindow}d
+Nov 18 15:11  DOWNLOAD        —                    dr.lee@…  203.0.113.88  part1 · 1.8 TB
+${expiry().slice(0,6)}        <span class="y">EXPIRED + FILES DELETED</span>  system</span>`),
+   behind:['Every component writes to one <b>audit vault</b> in your project: console, setup page, transfer server, storage, keys and web protection.','The vault keeps records for <b>six years</b>, and can be locked so nobody can shorten that.','The same data is in <b>BigQuery</b> for reporting and investigations.'],
+   tiles:['logs'], why:'Auditors get a complete chain from the original request to the last byte downloaded.',
+   safeguards:['Audit controls','6-year retention'] }
+];
+
+const JOURNEYS = {
+  user: {steps:USER, i:0, eyebrow:'Hospital user journey', title:'What the hospital user experiences', lead:'Click through the screens. The button on each screen moves to the next step, and the panel on the right shows what\'s happening underneath.'},
+  team: {steps:TEAM, i:0, eyebrow:'Client team journey', title:'What your team experiences', lead:'From logging a request to approving it, monitoring it and auditing it. Click the button on each screen to continue.'}
+};
+
+/* ======================================================================
+   Rendering
+   ====================================================================== */
+let currentTab = 'overview';
+let timers = [];
+function clearTimers(){ timers.forEach(t=>{ clearInterval(t); clearTimeout(t); }); timers=[]; }
+
+function renderTabs(){
+  document.getElementById('tabs').innerHTML = TABS.map(([id,label],i)=>
+    `<button class="${id===currentTab?'on':''}" onclick="goTab('${id}')"><span class="k">${i+1}</span>${label}</button>`).join('');
+}
+function goTab(id, step){
+  clearTimers();
+  currentTab=id;
+  document.querySelectorAll('.tab').forEach(s=>s.classList.toggle('on', s.id==='tab-'+id));
+  renderTabs();
+  if(JOURNEYS[id]){ if(typeof step==='number') JOURNEYS[id].i=step; renderJourney(id); }
+  window.scrollTo({top:0});
+}
+
+function mapHtml(active){
+  return `<div class="map">${GROUPS.map(([g,label])=>`<div><div class="col-h">${label}</div>${
+    Object.entries(TILES).filter(([,t])=>t.g===g).map(([k,t])=>`<div class="tile g-${g} ${active.includes(k)?'on':''}" style="margin-bottom:6px"><b>${t.n}</b><span>${t.s}</span></div>`).join('')
+  }</div>`).join('')}</div>`;
+}
+
+function renderJourney(key){
+  clearTimers();
+  const J=JOURNEYS[key], s=J.steps[J.i];
+  document.getElementById('tab-'+key).innerHTML = `
+    <div class="jhead">
+      <div><div class="eyebrow">${J.eyebrow}</div><div class="title">${J.title}</div><p class="lead">${J.lead}</p></div>
+    </div>
+    <div class="journey">
+      <div class="steps">${J.steps.map((st,i)=>`
+        <button class="${i===J.i?'on':''} ${i<J.i?'done':''}" onclick="setStep('${key}',${i})">
+          <span class="num">${i<J.i?'✓':i+1}</span><span class="lbl"><b>${st.title}</b><span>${st.actor}</span></span>
+        </button>`).join('')}</div>
+      <div>
+        <div class="screen-head"><h3>${J.i+1}. ${s.title}</h3><span class="chip">${s.actor}</span></div>
+        <p class="caption">${s.caption}</p>
+        ${s.mock()}
+        <div class="navbtns">
+          <button class="nb" onclick="back()" ${J.i===0?'disabled style="opacity:.4"':''}>← Back</button>
+          <button class="nb primary" onclick="advance()">${J.i===J.steps.length-1?'Finish ✓':'Next step →'}</button>
+        </div>
+      </div>
+      <div class="card hood">
+        <h4>Under the hood · components in use</h4>
+        ${mapHtml(s.tiles)}
+        <h4>What happens behind the scenes</h4>
+        <ol class="behind">${s.behind.map(b=>`<li>${b}</li>`).join('')}</ol>
+        <h4>Why it's built this way</h4>
+        <p style="font-size:13.5px">${s.why}</p>
+        <h4>Safeguards</h4>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">${s.safeguards.map(x=>`<span class="chip green">${x}</span>`).join('')}</div>
+      </div>
+    </div>`;
+  if(s.onEnter) s.onEnter();
+}
+function setStep(key,i){ JOURNEYS[key].i=i; renderJourney(key); }
+function advance(){
+  const J=JOURNEYS[currentTab]; if(!J) return;
+  if(J.i<J.steps.length-1){ J.i++; renderJourney(currentTab); window.scrollTo({top:0,behavior:'smooth'}); }
+  else if(currentTab==='user'){ goTab('team',0); }
+  else { goTab('arch'); }
+}
+function back(){ const J=JOURNEYS[currentTab]; if(J && J.i>0){ J.i--; renderJourney(currentTab); } }
+
+function pickWindow(d){
+  chosenWindow=d;
+  document.querySelectorAll('#winSeg button').forEach(b=>b.classList.toggle('on', b.textContent.startsWith(d+' ')));
+  const n=document.getElementById('winNote'); if(n) n.textContent='Access and files end '+expiry();
+}
+
+function startDownload(){
+  clearTimers();
+  const bar=document.getElementById('dlBar'), pct=document.getElementById('dlPct'), st=document.getElementById('dlStatus');
+  if(!bar) return;
+  let p=0, phase=0;
+  bar.style.width='0%'; st.className='toast info'; st.textContent='Downloading…';
+  const t=setInterval(()=>{
+    if(phase===0){ p+=3; if(p>=60){ p=60; phase=1; st.className='toast bad'; st.textContent='⚠ Connection lost at 60% (1.08 TB). Reconnecting and signing in again…';
+        timers.push(setTimeout(()=>{ phase=2; st.className='toast info'; st.textContent='↻ Resuming from byte 1,080,000,000,000. Nothing is downloaded twice.'; },1800)); } }
+    else if(phase===2){ p+=2; if(p>=100){ p=100; phase=3; st.className='toast ok'; st.textContent='✓ Download complete. File verified.'; clearInterval(t); } }
+    bar.style.width=p+'%'; pct.textContent=p+'%';
+  },120);
+  timers.push(t);
+}
+function runApproveChecklist(){
+  clearTimers();
+  for(let i=0;i<5;i++){ const el=document.getElementById('ck'+i); if(el) el.classList.remove('done'); }
+  const done=document.getElementById('ckDone'); if(done) done.style.opacity=0;
+  for(let i=0;i<5;i++){ timers.push(setTimeout(()=>{ const el=document.getElementById('ck'+i); if(el) el.classList.add('done'); }, 500+i*650)); }
+  timers.push(setTimeout(()=>{ if(done) done.style.opacity=1; }, 500+5*650));
+}
+
+/* ---------- Overview: journey at a glance ---------- */
+function renderGlance(){
+  const H = (n,title,sub,tab,step)=>`<button class="gstep" onclick="goTab('${tab}',${step})"><span class="n">${n}</span><b>${title}</b><span>${sub}</span></button>`;
+  const E = '<div class="gempty"></div>';
+  document.getElementById('glance').innerHTML =
+    `<div class="lane-label">🏥 Hospital user</div>` +
+    H('1','Requests access','By email, as today','user',0) + E +
+    H('3','Sets password + MFA','From the invite link','user',2) + E +
+    H('5','Gets "access approved"','Knows exactly how long','user',4) +
+    H('6','Downloads, then access ends','Resumable · auto-expiry','user',5) +
+    `<div class="lane-label">🧑‍💼 Client team</div>` + E +
+    H('2','Logs request, sends invite','Account created switched off','team',1) + E +
+    H('4','Reviews & approves','Chooses 3, 7 or 14 days','team',4) + E +
+    H('7','Monitors, revokes, audits','One click · six-year trail','team',6);
+}
+
+/* ---------- HIPAA table ---------- */
+const HIPAA = [
+  ['Only approved people get access','§164.308(a)(4)','A named reviewer logs, invites and approves every request; only the requested files are shared, into a private folder.','Review console · Cloud IAP'],
+  ['Every user is uniquely identified','§164.312(a)(2)(i)','One account per named person; reviewers use their company identity.','SFTPGo · Cloud IAP'],
+  ['Strong sign-in (MFA)','§164.312(d)','Hospital users: password + authenticator code. Staff: company sign-in + MFA.','SFTPGo · Cloud IAP'],
+  ['Encrypted when stored','§164.312(a)(2)(iv)','Each hospital has its own hardware-protected key for storage, database and audit data.','Cloud HSM'],
+  ['Encrypted in transit','§164.312(e)(1)','SFTP (SSH) and modern TLS only; internal connections stay on the private network.','SFTPGo · load balancers'],
+  ['Automatic logoff and expiry','§164.312(a)(2)(iii)','Idle sessions end after 15 minutes; access ends at the end of the approved window.','SFTPGo'],
+  ['Complete audit trail, kept 6 years','§164.312(b) · §164.316(b)(2)','Every request, approval, sign-in and download recorded with network address; retention can be locked.','Cloud Logging · BigQuery'],
+  ['Secure disposal','§164.310(d)(2)(i)','Files delete themselves when the window ends; revoke deletes immediately; keys can be destroyed.','Cloud Storage · Cloud HSM'],
+  ['Business associates covered','§164.308(b)','Every service touching patient data is covered by the Google Cloud BAA; no other vendor is in the data path.','Google Cloud BAA']
+];
+function renderHipaa(){
+  document.getElementById('hipaaTable').innerHTML =
+    '<tr><th>Safeguard</th><th>HIPAA reference</th><th>How the solution meets it</th><th>Provided by</th></tr>' +
+    HIPAA.map(r=>`<tr><td><b>${r[0]}</b></td><td class="mono" style="white-space:nowrap">${r[1]}</td><td>${r[2]}</td><td><span class="chip blue">${r[3]}</span></td></tr>`).join('');
+}
+
+/* ---------- Comparison ---------- */
+const CMP = [
+  ['Where patient data travels','good','Stays in your Google Cloud environment end to end.','partial','Passes through the vendor\'s service between your storage and the hospital.'],
+  ['Business associate agreements','good','One: Google Cloud.','partial','Two: Google Cloud and Files.com (a HIPAA-eligible plan is required).'],
+  ['Approval before any access','good','Built in: accounts start switched off and files are copied only at approval.','partial','Possible, but needs custom work with the product\'s API and automations.'],
+  ['Hard end date and deletion','good','The access window and file deletion are set automatically at approval.','partial','Share expiry is available; deleting the source files needs extra setup.'],
+  ['Per-hospital encryption "off switch"','good','Each hospital has its own key; disable it to cut off that hospital instantly.','gap','The storage connection is all-or-nothing; there\'s no per-hospital key control.'],
+  ['Front-door protection','good','Cloud Armor plus network allowlists, managed with your other Google Cloud security policies.','partial','The vendor\'s own IP allowlist settings, managed separately.'],
+  ['One audit trail','good','Every step in one audit vault and BigQuery, in your project.','partial','Vendor logs must be exported and joined with your Google Cloud logs.'],
+  ['Hospital user experience','good','SFTP, browser and WebDAV; one-click connection profile; resumable.','good','Polished web portal, desktop apps and branding; resumable.'],
+  ['Day-to-day operations','partial','You run it, made easier by Google-managed servers, infrastructure as code and automated tests.','good','Fully managed by the vendor.'],
+  ['Pricing model','good','Pay for what you use plus a flat license; counts toward your Google Cloud commitment.','partial','Subscription tiers plus usage, outside your Google Cloud commitment; storage egress is still paid.']
+];
+function renderCompare(){
+  const sym={good:'●',partial:'◐',gap:'○'};
+  document.getElementById('cmpTable').innerHTML =
+    '<tr><th style="width:220px">What matters</th><th>This solution (SFTPGo on Google Cloud)</th><th>Files.com + Cloud Storage</th></tr>' +
+    CMP.map(r=>`<tr><td><b>${r[0]}</b></td><td><span class="rate ${r[1]}">${sym[r[1]]}</span>${r[2]}</td><td><span class="rate ${r[3]}">${sym[r[3]]}</span>${r[4]}</td></tr>`).join('');
+}
+
+/* ---------- Cost model ---------- */
+const v = id => { const n=parseFloat(document.getElementById(id).value); return isNaN(n)?0:n; };
+const usd = n => (n<0?'-':'')+'$'+Math.abs(Math.round(n)).toLocaleString('en-US');
+function calc(){
+  const tb=v('tb'), users=v('users');
+  document.getElementById('tbVal').textContent=tb+' TB';
+  document.getElementById('usersVal').textContent=users.toLocaleString()+' accounts';
+  const egress=v('egress')*tb, rate=v('rate');
+  const o={infra:v('infra')+tb*5, lic:v('lic'), egress, ops:v('opsOurs')*rate, one:v('oneOurs')}; o.m=o.infra+o.lic+o.egress+o.ops;
+  const f={plan:v('fPlan')+v('fGcp'), vend:Math.max(0,users-v('fIncl'))*v('fUser')+Math.max(0,tb-v('fInclTB'))*v('fOver'), egress, ops:v('opsFiles')*rate, one:v('oneFiles')}; f.m=f.plan+f.vend+f.egress+f.ops;
+  const o3=o.one+36*o.m, f3=f.one+36*f.m, d=f3-o3;
+  document.getElementById('oursM').textContent=usd(o.m); document.getElementById('oursY').textContent=usd(o.m*12)+' per year';
+  document.getElementById('filesM').textContent=usd(f.m); document.getElementById('filesY').textContent=usd(f.m*12)+' per year';
+  const de=document.getElementById('deltaEyebrow'), dv=document.getElementById('delta');
+  if(d>=0){ de.textContent='3-year savings with this solution'; de.style.color='var(--success)'; dv.style.color='var(--success)'; }
+  else { de.textContent='3-year difference: Files.com lower'; de.style.color='var(--warn)'; dv.style.color='var(--warn)'; }
+  dv.textContent=usd(Math.abs(d));
+  document.getElementById('deltaPct').textContent=Math.round(Math.abs(d)/Math.max(o3,f3,1)*100)+'% of the higher total, including one-time costs';
+  document.getElementById('tcoOurs').textContent=usd(o3); document.getElementById('tcoFiles').textContent=usd(f3);
+  const max=Math.max(o3,f3,1), seg=(x,c,t)=>`<div title="${t}: ${usd(x)}" style="width:${x/max*100}%;background:${c}"></div>`;
+  document.getElementById('stackOurs').innerHTML=seg(o.one,'#64748b','One-time')+seg(36*(o.infra+o.lic),'var(--primary)','Platform + license')+seg(36*o.egress,'var(--teal)','Egress')+seg(36*o.ops,'var(--violet)','Operations');
+  document.getElementById('stackFiles').innerHTML=seg(f.one,'#64748b','One-time')+seg(36*f.plan,'var(--primary)','Plan + remaining Google Cloud')+seg(36*f.egress,'var(--teal)','Egress')+seg(36*f.vend,'var(--warn)','Bandwidth + accounts')+seg(36*f.ops,'var(--violet)','Operations');
+}
+
+/* ======================================================================
+   Technical architecture diagram
+   ====================================================================== */
+const AN = {
+  reviewer:{x:20,y:70,w:170,h:58,t:'Client reviewer',s:'Company SSO + MFA',c:'people'},
+  inbox:{x:20,y:245,w:170,h:58,t:'Email inbox',s:'Invite · alert · approved',c:'people'},
+  hospital:{x:20,y:400,w:170,h:58,t:'Hospital user',s:'Browser · SFTP client',c:'people'},
+  iap:{x:240,y:70,w:180,h:58,t:'Identity-Aware Proxy',s:'Staff sign-in gate',c:'entry'},
+  armor:{x:240,y:245,w:180,h:58,t:'Cloud Armor + HTTPS LB',s:'WAF · CIDR allowlist',c:'entry'},
+  l4:{x:240,y:400,w:180,h:58,t:'Network LB (L4)',s:'Source-range allowlist',c:'entry'},
+  console:{x:470,y:70,w:190,h:58,t:'Approval console',s:'Cloud Run · behind IAP',c:'app'},
+  portal:{x:470,y:200,w:190,h:58,t:'Setup page (DMZ)',s:'GKE pod · setup only',c:'app'},
+  ilb:{x:470,y:300,w:190,h:46,t:'Internal LB 10.10.0.51',s:'SFTPGo admin API',c:'app'},
+  sftpgo:{x:470,y:400,w:190,h:58,t:'SFTPGo × 2',s:'GKE Autopilot · private',c:'app'},
+  smtp:{x:710,y:30,w:200,h:52,t:'Secret Manager + SMTP',s:'Relay config · 3 emails',c:'data'},
+  control:{x:710,y:104,w:200,h:52,t:'Control-state bucket',s:'Requests · tokens · outbox',c:'data'},
+  sql:{x:710,y:178,w:200,h:52,t:'Cloud SQL (PSC)',s:'PostgreSQL · 10.10.0.50',c:'data'},
+  export:{x:710,y:252,w:200,h:52,t:'Export bucket',s:'Per-request · auto-expiry',c:'data'},
+  source:{x:710,y:326,w:200,h:52,t:'Source bucket',s:'Video archive by hospital',c:'data'},
+  hsm:{x:710,y:400,w:200,h:52,t:'Cloud KMS / HSM',s:'Per-hospital CMEK keys',c:'data'},
+  vault:{x:960,y:150,w:180,h:58,t:'Log vault (6 yr)',s:'Cloud Logging bucket',c:'evidence'},
+  bq:{x:960,y:300,w:180,h:58,t:'BigQuery',s:'Audit dataset (CMEK)',c:'evidence'}
+};
+const AE = [
+  ['reviewer','iap','HTTPS · SSO + MFA'], ['iap','console','Signed JWT (ES256)'],
+  ['console','ilb','Direct VPC egress','right'], ['ilb','sftpgo','Admin REST API'],
+  ['console','control','Request state'], ['console','smtp','Send email'], ['console','export','Copy at approval'],
+  ['smtp','inbox','SMTP · STARTTLS'], ['inbox','hospital','Opens link'],
+  ['hospital','armor','HTTPS :443'], ['armor','portal','Allowed CIDR only'],
+  ['portal','sftpgo','ClusterIP · status=0','left'], ['portal','control','Request state'], ['portal','smtp','Approver alert'],
+  ['hospital','l4','SFTP :22 · HTTPS :443'], ['l4','sftpgo','Allowed CIDR only'],
+  ['sftpgo','sql','TLS over PSC'], ['sftpgo','export','Read-only · Workload Identity'],
+  ['source','export','Server-side copy'], ['hsm','export','CMEK','right'], ['hsm','source','CMEK'],
+  ['console','vault','Audit events'], ['armor','vault','WAF decisions'], ['sftpgo','vault','Logins · file reads'],
+  ['export','vault','Data Access logs'], ['vault','bq','Log sink']
+];
+const AZONES = [
+  {x:10,w:190,l:'PEOPLE'}, {x:230,w:200,l:'FRONT DOORS'}, {x:460,w:210,l:'PRIVATE VPC · GKE + CLOUD RUN'},
+  {x:700,w:220,l:'DATA & KEYS'}, {x:950,w:200,l:'EVIDENCE'}
+];
+const AFLOWS = {
+  all:{label:'All', edges:null},
+  request:{label:'Request & invite', edges:['reviewer-iap','iap-console','console-control','console-ilb','ilb-sftpgo','sftpgo-sql','console-smtp','smtp-inbox','console-vault']},
+  setup:{label:'Password + MFA', edges:['inbox-hospital','hospital-armor','armor-portal','portal-sftpgo','portal-control','portal-smtp','sftpgo-sql','armor-vault']},
+  approve:{label:'Approval', edges:['reviewer-iap','iap-console','console-export','source-export','hsm-export','console-ilb','ilb-sftpgo','console-smtp','smtp-inbox','console-vault']},
+  download:{label:'Download', edges:['hospital-l4','l4-sftpgo','sftpgo-sql','sftpgo-export','hsm-export','sftpgo-vault']},
+  audit:{label:'Audit', edges:['console-vault','armor-vault','sftpgo-vault','export-vault','vault-bq']}
+};
+const AINFO = {
+  reviewer:{svc:'Company identity (Google Workspace / Cloud Identity)', does:'Logs requests, sends invites, approves with a window, revokes.', cfg:['Member of the reviewer group','Company MFA enforced by the identity provider']},
+  inbox:{svc:'Any email client', does:'Receives the invite, the approver alert and the access-approved email.', cfg:['No patient information in any email','Links are single-use and expire in 48 hours']},
+  hospital:{svc:'Browser, Cyberduck / WinSCP / FileZilla, or scripts', does:'Sets password + MFA, then downloads within the approved window.', cfg:['No Google account needed','Must connect from an approved hospital network']},
+  iap:{svc:'Identity-Aware Proxy (native on Cloud Run)', does:'Lets only signed-in reviewer-group members reach the console.', cfg:['iap_enabled = true on the Cloud Run service','roles/iap.httpsResourceAccessor for the reviewer group only','Injects X-Goog-IAP-JWT-Assertion (ES256)']},
+  armor:{svc:'Global external HTTPS load balancer + Cloud Armor', does:'Protects the hospital setup page.', cfg:['OWASP rules: SQLi, XSS, LFI, RCE','Throttle 60 requests/min per IP','Allow approved hospital CIDRs, default deny 403','Adaptive Protection (L7 DDoS)','TLS 1.2+ RESTRICTED SSL policy']},
+  l4:{svc:'Regional external passthrough network load balancer', does:'Front door for SFTP, the browser download page and WebDAV.', cfg:['loadBalancerSourceRanges = hospital CIDRs','externalTrafficPolicy: Local (real client IP in logs)','Ports 22, 443, 8444']},
+  console:{svc:'Cloud Run v2 (Python)', does:'Request queue, invites, approval with window, revoke, email outbox preview.', cfg:['Verifies the IAP JWT signature, issuer, expiry and audience','Direct VPC egress (private ranges only)','Copies files and sets customTime at approval','Timeout 3600 s for large server-side copies']},
+  portal:{svc:'GKE Autopilot pod (Python)', does:'Single-use password + TOTP setup page for hospital users.', cfg:['Exposes setup routes only; admin paths return 404','Can save credentials but can never enable an account','Workload Identity: request state + SMTP secret only']},
+  ilb:{svc:'Internal passthrough load balancer', does:'Private entry point to the SFTPGo admin REST API.', cfg:['Static internal IP 10.10.0.51','Firewall: VPC and health-check ranges only','Never exposed to the internet']},
+  sftpgo:{svc:'SFTPGo on GKE Autopilot (2+ replicas)', does:'Authenticates hospital users and streams their approved files from Cloud Storage.', cfg:['SFTP, HTTPS web client, WebDAV','Argon2id passwords + TOTP on SSH and HTTP','Per-user chroot, read-only, allowed IPs, expiry','Shared SSH host keys; 15-minute idle timeout','Structured JSON logs with client IP']},
+  smtp:{svc:'Secret Manager + corporate SMTP relay', does:'Holds relay settings; the console and setup page send 3 lifecycle emails.', cfg:['STARTTLS on port 587','Change the relay without a redeploy','Sandbox mode stores emails in an outbox for preview']},
+  control:{svc:'Cloud Storage (CMEK, versioned)', does:'Request records, token index, active-request index, email outbox.', cfg:['Shared by the console and setup page only','No access for SFTPGo or hospital users']},
+  sql:{svc:'Cloud SQL for PostgreSQL 15', does:'SFTPGo accounts: users, password hashes, MFA settings, permissions, expiry.', cfg:['Public IP disabled; Private Service Connect at 10.10.0.50','TLS required; CMEK encryption','Shared state so any replica can serve any user','No videos are stored here']},
+  export:{svc:'Cloud Storage (per-request prefixes)', does:'Holds approved files during the access window; each user\'s chroot.', cfg:['Written only at approval, with the hospital key','Lifecycle: delete 1 day after customTime (= expiry)','Safety net: max window + 2 days','SFTPGo identity is read-only here']},
+  source:{svc:'Cloud Storage (versioned)', does:'The video archive, organized by hospital.', cfg:['No external or SFTPGo access','Read by the console only when staging an approved request']},
+  hsm:{svc:'Cloud KMS with HSM protection', does:'Encryption keys: one per hospital, plus infrastructure.', cfg:['FIPS 140-2 Level 3, AES-256-GCM','90-day rotation','Disable a version to cut off a hospital instantly']},
+  vault:{svc:'Cloud Logging bucket', does:'Six-year store for all audit events.', cfg:['2,190-day retention, lockable','Sources: console, setup page, SFTPGo, Cloud Armor, IAP, Storage and KMS Data Access logs']},
+  bq:{svc:'BigQuery (partitioned, CMEK)', does:'SQL reporting and investigations over the audit events.', cfg:['Fed by a log sink','Traces any request from intake to last download']}
+};
+let archFlow='all', archSel=null;
+
+function ageom(a,b,opt){
+  const A=AN[a],B=AN[b]; let x1,y1,x2,y2;
+  if(opt==='right'||opt==='left'){
+    const r=opt==='right';
+    x1=r?A.x+A.w:A.x; y1=A.y+A.h/2; x2=r?B.x+B.w:B.x; y2=B.y+B.h/2;
+    const c=r?Math.max(x1,x2)+28:Math.min(x1,x2)-28;
+    return {d:`M${x1},${y1} C${c},${y1} ${c},${y2} ${x2+(r?6:-6)},${y2}`, mx:c+(r?4:-4), my:(y1+y2)/2, anchor:r?'start':'end'};
+  }
+  if(Math.abs(A.x-B.x)<5){
+    if(B.y>A.y){x1=A.x+A.w/2;y1=A.y+A.h;x2=B.x+B.w/2;y2=B.y-4;} else {x1=A.x+A.w/2;y1=A.y;x2=B.x+B.w/2;y2=B.y+B.h+4;}
+    return {d:`M${x1},${y1} L${x2},${y2}`, mx:x1+8, my:(y1+y2)/2+4, anchor:'start'};
+  }
+  if(B.x>A.x){x1=A.x+A.w;y1=A.y+A.h/2;x2=B.x-4;y2=B.y+B.h/2;} else {x1=A.x;y1=A.y+A.h/2;x2=B.x+B.w+4;y2=B.y+B.h/2;}
+  const dx=(x2-x1)/2;
+  return {d:`M${x1},${y1} C${x1+dx},${y1} ${x2-dx},${y2} ${x2},${y2}`, mx:(x1+x2)/2, my:(y1+y2)/2-6, anchor:'middle'};
+}
+
+function drawArch(){
+  const svg=document.getElementById('archSvg'); if(!svg) return;
+  let h=`<defs>
+    <marker id="am-off" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker>
+    <marker id="am-on" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--primary)"/></marker></defs>`;
+  AZONES.forEach(z=>{ h+=`<rect class="az" x="${z.x}" y="12" width="${z.w}" height="466" rx="12"/><text class="azl" x="${z.x+z.w/2}" y="500" text-anchor="middle">${z.l}</text>`; });
+  h+='<g>'+AE.map(([a,b,l,o])=>`<path id="ae-${a}-${b}" class="ae" d="${ageom(a,b,o).d}" marker-end="url(#am-off)"/>`).join('')+'</g>';
+  h+='<g>'+Object.entries(AN).map(([k,n])=>`<g class="an" id="an-${k}" onclick="selectArch('${k}')">
+      <rect class="bx" x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="10"/>
+      <rect class="ac-${n.c}" x="${n.x}" y="${n.y+9}" width="4" height="${n.h-18}" rx="2"/>
+      <text class="at" x="${n.x+14}" y="${n.y+n.h/2-3}">${n.t}</text>
+      <text class="as" x="${n.x+14}" y="${n.y+n.h/2+13}">${n.s}</text></g>`).join('')+'</g><g id="aLabels"></g>';
+  svg.innerHTML=h;
+  document.getElementById('flowSeg').innerHTML=Object.entries(AFLOWS).map(([k,f])=>`<button class="${k===archFlow?'on':''}" onclick="setArchFlow('${k}')">${f.label}</button>`).join('');
+  paintArch();
+}
+
+function paintArch(){
+  let activeEdges=null, activeNodes=null;
+  if(archSel){
+    activeEdges=AE.filter(e=>e[0]===archSel||e[1]===archSel).map(e=>e[0]+'-'+e[1]);
+  } else if(AFLOWS[archFlow].edges){
+    activeEdges=AFLOWS[archFlow].edges;
+  }
+  if(activeEdges){ activeNodes=new Set(); activeEdges.forEach(id=>{ const [a,b]=id.split('-'); activeNodes.add(a); activeNodes.add(b); }); if(archSel) activeNodes.add(archSel); }
+  let labels='';
+  AE.forEach(([a,b,l,o])=>{
+    const id=a+'-'+b, el=document.getElementById('ae-'+id); if(!el) return;
+    const on=activeEdges&&activeEdges.includes(id);
+    el.setAttribute('class','ae'+(activeEdges?(on?' on':' dim'):''));
+    el.setAttribute('marker-end', on?'url(#am-on)':'url(#am-off)');
+    if(on){ const g=ageom(a,b,o); labels+=`<text class="al" x="${g.mx}" y="${g.my}" text-anchor="${g.anchor}">${l}</text>`; }
+  });
+  Object.keys(AN).forEach(k=>{
+    const el=document.getElementById('an-'+k); if(!el) return;
+    el.setAttribute('class','an'+(activeNodes&&!activeNodes.has(k)?' dim':'')+(k===archSel?' sel':''));
+  });
+  const lg=document.getElementById('aLabels'); if(lg) lg.innerHTML=labels;
+  renderArchDetail();
+}
+
+function setArchFlow(k){ archFlow=k; archSel=null; document.querySelectorAll('#flowSeg button').forEach((b,i)=>b.classList.toggle('on', Object.keys(AFLOWS)[i]===k)); paintArch(); }
+function selectArch(k){ archSel = archSel===k?null:k; paintArch(); }
+
+function renderArchDetail(){
+  const box=document.getElementById('archDetail'); if(!box) return;
+  if(!archSel){
+    const f=AFLOWS[archFlow];
+    box.innerHTML=`<h4>${archFlow==='all'?'Reading the diagram':'Flow: '+f.label}</h4>
+      <p style="font-size:13.5px">${{
+        all:'Pick a flow above to animate its path, or click any component to see its configuration and connections.',
+        request:'A reviewer signs in through IAP, logs the request, and sends the invite. The console creates a disabled account through the private admin API and emails the setup link.',
+        setup:'The hospital user opens the link through Cloud Armor. The setup page saves password + TOTP in SFTPGo (still disabled) and alerts reviewers.',
+        approve:'On approval, the console copies only the requested files from Source to the per-request Export folder with the hospital key, enables the account until expiry, and sends the approved email.',
+        download:'The hospital connects through the network allowlist. SFTPGo checks password + TOTP against Cloud SQL and streams read-only from the Export bucket, decrypted with the hospital key.',
+        audit:'Every component writes to one log vault (6-year retention), with a sink into BigQuery for reporting.'
+      }[archFlow]}</p>
+      <h4>Legend</h4>
+      <ul class="list" style="font-size:12.5px"><li>Dashed animated line: active path</li><li>Click a component: shows its links + details</li><li>Click it again: clears the selection</li></ul>`;
+    return;
+  }
+  const n=AN[archSel], i=AINFO[archSel];
+  const links=AE.filter(e=>e[0]===archSel||e[1]===archSel).map(e=>`<li>${e[0]===archSel?'→ '+AN[e[1]].t:'← '+AN[e[0]].t}: <span class="muted">${e[2]}</span></li>`).join('');
+  box.innerHTML=`<h4>Component</h4><div style="font-size:16px;font-weight:800">${n.t}</div><div class="muted" style="font-size:12.5px;margin-top:2px">${i.svc}</div>
+    <h4>What it does</h4><p style="font-size:13.5px">${i.does}</p>
+    <h4>Key configuration</h4><ul class="list" style="font-size:12.5px">${i.cfg.map(c=>`<li>${c}</li>`).join('')}</ul>
+    <h4>Connections</h4><ul style="margin:0;padding-left:18px;font-size:12.5px">${links}</ul>
+    <div style="margin-top:12px"><button class="nb" onclick="selectArch('${archSel}')">Clear selection</button></div>`;
+}
+
+/* ---------- Global controls ---------- */
+function toggleTheme(){ const r=document.documentElement; r.dataset.theme=r.dataset.theme==='dark'?'light':'dark'; }
+function toggleFull(){ try{ if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }catch(e){} }
+document.addEventListener('keydown', e=>{
+  if(e.target.matches('input,textarea,select')) return;
+  const n=parseInt(e.key,10);
+  if(n>=1 && n<=TABS.length){ goTab(TABS[n-1][0]); return; }
+  if(e.key==='ArrowRight' && JOURNEYS[currentTab]){ e.preventDefault(); advance(); }
+  else if(e.key==='ArrowLeft' && JOURNEYS[currentTab]){ e.preventDefault(); back(); }
+  else if(e.key==='t'||e.key==='T') toggleTheme();
+  else if(e.key==='f'||e.key==='F') toggleFull();
+});
+
+renderGlance(); renderHipaa(); renderCompare(); calc(); drawArch();
+renderJourney('user'); renderJourney('team');
+goTab('overview');
+</script>
+</body>
+</html>
