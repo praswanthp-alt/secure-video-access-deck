@@ -4,9 +4,9 @@ Interactive, self-contained walkthrough deck for a HIPAA-aligned solution on Goo
 
 **View it:** https://praswanthp-alt.github.io/secure-video-access-deck/
 
-Tabs: Overview · Hospital user journey · Client team journey · Technical architecture · Why SFTPGo & HIPAA · SFTPGo vs Files.com · Rollout plan.
+Tabs: The problem · Options we explored · Recommended solution · Next steps.
 
-Keyboard: `1`–`7` switch tabs, `←` `→` step through journeys, `T` theme, `F` full screen.
+Keyboard: `1`–`4` switch tabs, `←` `→` step through the journey, `T` theme.
 
 The page is a single HTML file with no external dependencies. You can also download `index.html` and open it offline.
-Cost figures are illustrative placeholders.
+
