@@ -257,11 +257,11 @@
 <!-- ================================================== 1. THE CHALLENGE -->
 <section class="tab" id="tab-challenge">
   <div class="eyebrow">The challenge</div>
-  <h1 class="big">Doctors need procedure videos. <span class="grad">Sharing them must be secure, approved and time-limited.</span></h1>
-  <p class="lead">Doctors at your partner hospitals regularly ask for recordings of procedures. The files are large and contain patient information. Every share needs to be safe, compliant, and easy for a busy clinician to use.</p>
+  <h1 class="big">Admins/Doctors need procedure videos. <span class="grad">Sharing them must be secure, approved and time-limited.</span></h1>
+  <p class="lead">Admins/Doctors at your partner hospitals regularly ask for recordings of procedures. The files are large and contain patient information. Every share needs to be safe, compliant, and easy for a busy clinician to use.</p>
 
   <div class="section grid g3">
-    <div class="card"><div class="ico">🩺</div><h3>Who needs the videos</h3><p class="muted">Doctors and clinical staff at partner hospitals. They don't have accounts with you and shouldn't need a Google account.</p></div>
+    <div class="card"><div class="ico">🩺</div><h3>Who needs the videos</h3><p class="muted">Admins/Doctors and clinical staff at partner hospitals. They don't have accounts with you and shouldn't need a Google account.</p></div>
     <div class="card"><div class="ico">📦</div><h3>What they're downloading</h3><p class="muted">Procedure recordings, often hundreds of gigabytes and sometimes more than a terabyte.</p></div>
     <div class="card"><div class="ico">🧑‍💼</div><h3>Who decides</h3><p class="muted">Your team receives each request, checks it, and approves or declines it.</p></div>
   </div>
@@ -270,7 +270,7 @@
     <div class="eyebrow">What the solution must do</div>
     <div class="grid g2">
       <div class="card req"><div class="ico">🛡️</div><div><b>Meet HIPAA requirements</b><span>Encryption, access control, a full audit trail, and a BAA covering every service that touches the data.</span></div></div>
-      <div class="card req"><div class="ico">🔐</div><div><b>Password + multi-factor sign-in</b><span>Doctors set their own password and confirm with an authenticator app.</span></div></div>
+      <div class="card req"><div class="ico">🔐</div><div><b>Password + multi-factor sign-in</b><span>Admins/Doctors set their own password and confirm with an authenticator app.</span></div></div>
       <div class="card req"><div class="ico">✋</div><div><b>Approval before access</b><span>Nothing can be downloaded until someone on your team approves it.</span></div></div>
       <div class="card req"><div class="ico">⏳</div><div><b>Time-limited access</b><span>Access ends after a set window, and the shared copies are deleted.</span></div></div>
       <div class="card req"><div class="ico">📶</div><div><b>Easy, reliable downloads</b><span>Simple enough for a clinician in a browser, robust enough for very large files.</span></div></div>
@@ -291,13 +291,13 @@
     <div class="card" style="border-color:var(--success)">
       <span class="badge b-rec">Our recommendation</span>
       <h3 style="margin-top:10px">SFTPGo on Google Cloud</h3>
-      <p class="muted">It meets every requirement today: data stays in your Google Cloud, password + MFA sign-in, approval and expiry built in, and a simple browser experience for doctors, with a robust option for very large files. It's already running as a working proof of concept on Google Cloud.</p>
+      <p class="muted">It meets every requirement today: data stays in your Google Cloud, password + MFA sign-in, approval and expiry built in, and a simple browser experience for admins/doctors, with a robust option for very large files. It's already running as a working proof of concept on Google Cloud.</p>
       <p style="margin-top:10px"><b>The trade-off:</b> <span class="muted">a small amount of infrastructure for your team. Google-managed Kubernetes and a managed database keep that light.</span></p>
     </div>
     <div class="card" style="border-color:var(--primary)">
       <span class="badge b-alt">Strong alternative</span>
       <h3 style="margin-top:10px">Serverless portal</h3>
-      <p class="muted">If running no infrastructure at all is essential, this is the Google-native alternative. Doctors sign in with password + MFA and download directly from Cloud Storage using short-lived links. There are no servers to run.</p>
+      <p class="muted">If running no infrastructure at all is essential, this is the Google-native alternative. Admins/Doctors sign in with password + MFA and download directly from Cloud Storage using short-lived links. There are no servers to run.</p>
       <p style="margin-top:10px"><b>The trade-off:</b> <span class="muted">very large files are best downloaded with a download manager rather than a plain browser.</span></p>
     </div>
   </div>
@@ -306,7 +306,7 @@
 <!-- ================================================== 3. WALKTHROUGH -->
 <section class="tab" id="tab-walk">
   <div class="eyebrow">Solution walkthrough · SFTPGo on Google Cloud</div>
-  <h2 class="sec">What doctors and your team will see</h2>
+  <h2 class="sec">What admins/doctors and your team will see</h2>
   <p class="lead">Click through the screens, or use the highlighted button on each one. Screens are illustrative mockups of the proof of concept.</p>
   <div class="section stepper" id="stepper"></div>
   <div class="walk" id="walk"></div>
@@ -316,10 +316,10 @@
 <section class="tab" id="tab-how">
   <div class="eyebrow">How it works</div>
   <h2 class="sec">Built entirely on Google Cloud</h2>
-  <p class="lead">Two separate front doors: one for doctors, one for your team. Behind them, everything runs inside your Google Cloud project and is recorded.</p>
+  <p class="lead">Two separate front doors: one for admins/doctors, one for your team. Behind them, everything runs inside your Google Cloud project and is recorded.</p>
   <div class="section card">
     <div class="arch">
-      <div class="lane">🩺 Doctors</div>
+      <div class="lane">🩺 Admins/Doctors</div>
       <div class="abox e"><b>Protected front door</b><span>Only approved hospital networks get through (Cloud Armor + network allowlist)</span></div>
       <div class="abox k"><b>Setup page &amp; download site</b><span>Password + MFA setup, then browser or SFTP downloads (SFTPGo on GKE Autopilot)</span></div>
       <div class="abox d"><b>Private download folder</b><span>Only the approved files, encrypted with the hospital's own key (Cloud Storage + Cloud HSM)</span></div>
@@ -336,9 +336,9 @@
       <div class="eyebrow">Why it meets HIPAA</div>
       <ul class="ticks">
         <li><b>One BAA:</b> every service that touches the videos is a Google Cloud service under your BAA</li>
-        <li><b>Strong sign-in:</b> password + authenticator code for doctors; your company sign-in and MFA policy for your team</li>
+        <li><b>Strong sign-in:</b> password + authenticator code for admins/doctors; your company sign-in and MFA policy for your team</li>
         <li><b>Encrypted:</b> in transit, and at rest with a separate key per hospital</li>
-        <li><b>Minimum access:</b> each doctor sees only their approved files, read-only</li>
+        <li><b>Minimum access:</b> each admin/doctor sees only their approved files, read-only</li>
         <li><b>Automatic expiry:</b> sign-in stops at the end of the window and the copies are deleted automatically</li>
         <li><b>Audit trail:</b> every request, approval, sign-in and download is kept for 6 years</li>
       </ul>
@@ -347,7 +347,7 @@
       <div class="eyebrow">Why SFTPGo</div>
       <ul class="ticks">
         <li>Supports <b>password + MFA</b> for people outside your organization</li>
-        <li><b>Simple browser downloads</b> for doctors, plus <b>SFTP</b> for very large files, which resumes if interrupted</li>
+        <li><b>Simple browser downloads</b> for admins/doctors, plus <b>SFTP</b> for very large files, which resumes if interrupted</li>
         <li>Reads <b>directly from Cloud Storage</b>, with no file servers or extra copies</li>
         <li>Locks each account to <b>one folder, the hospital's network, and an end date</b></li>
         <li>Driven automatically by the review console, so nothing is set up by hand</li>
@@ -363,7 +363,7 @@
       <tr><td><b>Cloud Armor + load balancers</b></td><td>Web protection and the hospital network allowlist</td></tr>
       <tr><td><b>Cloud Storage</b></td><td>Video archive, plus private per-request download folders that delete themselves</td></tr>
       <tr><td><b>Cloud KMS / Cloud HSM</b></td><td>A separate hardware-protected key per hospital, with an off switch that takes effect within minutes</td></tr>
-      <tr><td><b>Cloud SQL</b></td><td>Doctor accounts and MFA settings, on a private network only</td></tr>
+      <tr><td><b>Cloud SQL</b></td><td>Admin/Doctor accounts and MFA settings, on a private network only</td></tr>
       <tr><td><b>Cloud Logging + BigQuery</b></td><td>6-year audit trail and reporting</td></tr></table></div></details>
     <details><summary>What your team would run</summary><div class="inner"><table class="simple">
       <tr><th>Piece</th><th>Google handles</th><th>Your team handles</th></tr>
@@ -374,7 +374,7 @@
       <p class="muted" style="margin-top:10px">Everything is defined as code and checked by automated tests, so changes are repeatable.</p></div></details>
     <details><summary>Security controls at a glance</summary><div class="inner"><ul class="ticks">
       <li>Accounts start switched off; files are copied only at approval, into a folder for that request alone</li>
-      <li>Doctors can only connect from approved hospital networks</li>
+      <li>Admins/Doctors can only connect from approved hospital networks</li>
       <li>The review console is never exposed publicly and talks to the download service over a private network</li>
       <li>No stored keys in code; services use short-lived Google credentials</li>
       <li>Revoke in one click, or switch off a hospital's key to cut off its files within minutes</li></ul></div></details>
@@ -407,7 +407,7 @@ const OPTIONS = [
   { name:`Cloud FTP`, tag:['b-no','Not a fit today'],
     what:`Google's managed SFTP service in front of Cloud Storage.`,
     pros:[`Fully managed by Google`,`Network allowlists built in`],
-    cons:[`Sign-in is SSH keys only, with no password + MFA`,`SFTP only, no browser`,`Not yet on the HIPAA covered-products list`], verdict:`Not suited to doctors today.` },
+    cons:[`Sign-in is SSH keys only, with no password + MFA`,`SFTP only, no browser`,`Not yet on the HIPAA covered-products list`], verdict:`Not suited to admins/doctors today.` },
   { name:`Google Drive / Workspace`, tag:['b-no','Not a fit'],
     what:`Share the videos from Drive with outside users.`,
     pros:[`No infrastructure`,`Expiring access`],
@@ -417,7 +417,7 @@ const FIT = [
   [`Data stays in your Google Cloud`, ['y'],['y'],['p','via vendor'],['y'],['p','moves to Drive']],
   [`Password + MFA sign-in`, ['y'],['y'],['y'],['n','SSH keys'],['p','email PIN']],
   [`Approval + time-limited access`, ['y','built'],['y','to build'],['p','custom'],['n'],['p','expiry only']],
-  [`Easy for doctors (browser)`, ['y'],['y'],['y'],['n','SFTP only'],['y']],
+  [`Easy for admins/doctors (browser)`, ['y'],['y'],['y'],['n','SFTP only'],['y']],
   [`Very large (1 TB+) downloads`, ['y','SFTP option'],['p','download manager'],['y'],['y'],['p']],
   [`No infrastructure to run`, ['p','light'],['y'],['y'],['y'],['y']],
   [`One BAA / Google-native`, ['y'],['y'],['n','2 BAAs'],['q','confirm'],['y','Workspace BAA']]
@@ -449,7 +449,7 @@ let sub = 0;
 
 /* ---------------- Steps ---------------- */
 const STEPS = [
-  { who:['d','Doctor'], title:`Requests a video`, caption:`Dr. Lee emails your team asking for a procedure recording, the same way requests come in today.`,
+  { who:['d','Admin/Doctor'], title:`Requests a video`, caption:`Dr. Lee emails your team asking for a procedure recording, the same way requests come in today.`,
     screen:()=>email({app:'mail.riversidehospital.org', subject:'Request: procedure recording, Procedure 1001', from:'Dr. Sam Lee, Riverside Hospital', to:'video-requests@yourcompany.com', initial:'S', color:'#7c3aed',
       body:`<p>Hello,</p><p style="margin-top:10px">Could you please share the recording of <b>Procedure 1001</b> from last Tuesday? I'm the treating surgeon and need it for a case review.</p><p style="margin-top:10px">Thank you,<br>Dr. Sam Lee<br><span class="small">Riverside Hospital</span></p>
       <p style="margin-top:16px"><button class="cta pulse" onclick="next()">Send</button></p>`}),
@@ -469,7 +469,7 @@ const STEPS = [
     behind:[`Only your approved staff can open this console, using your company sign-in and MFA policy.`,`A download account is created for Dr. Lee, switched off and limited to this request.`,`An invite with a single-use link is emailed.`],
     parts:['Identity-Aware Proxy','Cloud Run','SFTPGo'] },
 
-  { who:['d','Doctor'], title:`Receives the invite`, caption:`Dr. Lee gets a short, clear email with a secure setup link.`,
+  { who:['d','Admin/Doctor'], title:`Receives the invite`, caption:`Dr. Lee gets a short, clear email with a secure setup link.`,
     screen:()=>email({app:'mail.riversidehospital.org', subject:'Set up secure access for your video request', from:'Your Company Video Access', to:'sam.lee@riversidehospital.org', initial:'Y',
       body:`<p>Hi Dr. Lee,</p><p style="margin-top:10px">We received your request for <b>Procedure 1001</b>. To keep patient information safe, please set up your secure access:</p>
       <p style="margin-top:14px"><button class="cta pulse" onclick="next()">Set up secure access</button></p>
@@ -477,7 +477,7 @@ const STEPS = [
     behind:[`The link is single-use and expires in 48 hours.`,`The email contains no patient information.`],
     parts:['Email relay'] },
 
-  { who:['d','Doctor'], title:`Sets password + MFA`, caption:`On the secure setup page, Dr. Lee creates a password and connects an authenticator app.`,
+  { who:['d','Admin/Doctor'], title:`Sets password + MFA`, caption:`On the secure setup page, Dr. Lee creates a password and connects an authenticator app.`,
     screen:()=>frame('access.yourcompany.com/setup', `<div class="ext"><div class="top"><div class="lg">✚</div>Your Company · Secure Video Access</div>
       <div class="box">${sub===0?`
         <h3>Set up your secure access</h3><div class="meta">For sam.lee@riversidehospital.org · Procedure 1001</div>
@@ -515,7 +515,7 @@ const STEPS = [
     behind:[`Only now are the approved files copied into Dr. Lee's private folder.`,`Each file is set to delete itself when the window ends.`,`Access switches on until the same date, and the approver is recorded.`],
     parts:['Cloud Run','Cloud Storage','Cloud HSM','SFTPGo'] },
 
-  { who:['d','Doctor'], title:`Gets "ready to download"`, caption:`Dr. Lee receives a clear email: what's ready, how long they have, and where to sign in.`,
+  { who:['d','Admin/Doctor'], title:`Gets "ready to download"`, caption:`Dr. Lee receives a clear email: what's ready, how long they have, and where to sign in.`,
     screen:()=>email({app:'mail.riversidehospital.org', subject:`Your video is ready: available for ${win} days`, from:'Your Company Video Access', to:'sam.lee@riversidehospital.org', initial:'Y',
       body:`<p>Hi Dr. Lee,</p><p style="margin-top:10px">Your request has been approved. <b>You can download your files until ${endDate()}.</b> After that, access ends and the files are removed automatically.</p>
       <p style="margin-top:14px"><button class="cta pulse" onclick="next()">Sign in to download</button></p>
@@ -524,7 +524,7 @@ const STEPS = [
     behind:[`Sent only after everything is ready.`,`No patient information in the email.`],
     parts:['Email relay'] },
 
-  { who:['d','Doctor'], title:`Signs in`, caption:`Dr. Lee signs in to the download site with their password, then the 6-digit code.`,
+  { who:['d','Admin/Doctor'], title:`Signs in`, caption:`Dr. Lee signs in to the download site with their password, then the 6-digit code.`,
     screen:()=>frame('files.yourcompany.com/web/client/login', `<div class="sgl"><div class="bx">${sub===0?`
         <div class="lt"><i></i>WebClient</div><div style="color:#6b7280;font-size:13px">Sign in to access your files</div>
         <label>Username</label><input class="in" value="sam.lee@riversidehospital.org" readonly>
@@ -537,7 +537,7 @@ const STEPS = [
     behind:[`Password + code are required every time.`,`Sign-in only works from Riverside Hospital's network, and only until the end date.`,`Every sign-in is recorded.`],
     parts:['Cloud Armor','SFTPGo','Cloud SQL'] },
 
-  { who:['d','Doctor'], title:`Downloads the files`, caption:`Dr. Lee sees only the approved files and downloads them in the browser.`,
+  { who:['d','Admin/Doctor'], title:`Downloads the files`, caption:`Dr. Lee sees only the approved files and downloads them in the browser.`,
     screen:()=>frame('files.yourcompany.com/web/client/files', `<div class="sg"><div class="sg-side"><div class="sg-logo"><i></i>WebClient</div>
         <div class="sg-nav"><div class="on">📁 Files</div><div>🔗 Shares</div><div>🛡️ 2FA</div></div></div>
       <div class="sg-main"><div class="sg-topr">☀ 👤</div><div class="sg-card">
